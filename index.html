@@ -1,11 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="./css/header.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <link rel="stylesheet" href="./css/movie.css" />
+
+    <script type="text/javascript" src="./js/index.js"></script>
+    <title>FlixCatcher</title>
 </head>
+
 <body>
-    
+    <section class="header">
+        <div class="header-box">
+            <div class="logo-box">
+                <div class="menu-logo">FlixCatcher</div>
+            </div>
+            <div class="menu-box">
+                <span class="menu-text">전체</span>
+                <span class="menu-text">한국</span>
+                <span class="menu-text">미국</span>
+                <span class="menu-text">영국</span>
+                <span class="menu-text">일본</span>
+            </div>
+            <div class="search-box">
+                <input type="text" />
+            </div>
+        </div>
+    </section>
+    <div class="movie-container">
+        <div class="movie-list-kr" id="movieListKr">
+            <div>한국 영화</div>
+            <div class="movie-card">
+                <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
+                <!-- <img class="card-img" src="https://image.tmdb.org/t/p/original/h3weAFgg06GqchI2xDfufBgSFTj.jpg"> -->
+            </div>
+        </div>
+        <div class="movie-list-us">
+            <div class="movie-card"></div>
+        </div>
+        <div class="movie-list-jp">
+            <div class="movie-card"></div>
+        </div>
+    </div>
+
+    <!-- 검색하면 하위 태그에 DOM 생성  -->
+    <div class="movie-search-container">
+        
+    </div>
 </body>
+
 </html>

@@ -1,0 +1,40 @@
+/* header 섹션 */
+.header{
+    /* background-color: rgb(20, 20, 20); */
+    background-color: green;
+    width: 100vw;
+    height: 68px;
+    /* display: flex; */
+    /* justify-content: space-around; */
+}
+
+/* header div */
+.header-box{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    
+}
+
+/* header-box > logo-box */
+.logo-box{
+    width: 5%;
+    color: red;
+}
+/* header-box > menu-box */
+.menu-box{
+    color: white;
+    width: 60%;
+}
+/* header-box > search-box */
+.search-box{
+    width: 25%;
+    display: flex;
+    justify-content: end;
+}
+
+.search-box > input{
+    color: white;
+}
