@@ -6,3 +6,14 @@
 .card-img{
     width: 100%;
 }
+
+.movie-list{
+    margin: 0px auto 0px auto;
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+}
+
+.movie-card{
+    width: 17.6%;
+}

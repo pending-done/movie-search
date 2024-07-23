@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="./css/common.css" />
     <link rel="stylesheet" href="./css/movie.css" />
 
-    <script type="text/javascript" src="./js/index.js"></script>
     <title>FlixCatcher</title>
 </head>
 
@@ -26,22 +25,40 @@
                 <span class="menu-text">일본</span>
             </div>
             <div class="search-box">
-                <input type="text" />
+                <input type="text" class="input-search" id="inputSearch" />
             </div>
         </div>
     </section>
     <div class="movie-container">
-        <div class="movie-list-kr" id="movieListKr">
+        <div>전체 TOP 10</div>
+        <div class="movie-list" id="movieListAll">
+            <div class="movie-card">
+                <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
+            </div>
+            <div class="movie-card">
+                <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
+            </div>
+            <div class="movie-card">
+                <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
+            </div>
+            <div class="movie-card">
+                <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
+            </div>
+            <div class="movie-card">
+                <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
+            </div>
+        </div>
+        <div class="movie-list" id="movieListKR">
             <div>한국 영화</div>
             <div class="movie-card">
                 <img class="card-img" src="https://image.tmdb.org/t/p/original/kPtNokhBtgwSp3MHaR3X4O0SPbF.jpg">
                 <!-- <img class="card-img" src="https://image.tmdb.org/t/p/original/h3weAFgg06GqchI2xDfufBgSFTj.jpg"> -->
             </div>
         </div>
-        <div class="movie-list-us">
+        <div class="movie-list" id="movieListUS">
             <div class="movie-card"></div>
         </div>
-        <div class="movie-list-jp">
+        <div class="movie-list" id="movieListJP">
             <div class="movie-card"></div>
         </div>
     </div>
@@ -50,6 +67,9 @@
     <div class="movie-search-container">
         
     </div>
+
+    <script src="https://unpkg.com/hangul-util/dist/bundle.js"></script>
+    <script type="text/javascript" src="./js/index.js"></script>
 </body>
 
 </html>

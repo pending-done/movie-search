@@ -19,43 +19,85 @@ const options = {
 const API_KEY = '5cbcc190dfddff747f1a38eea2f7b053';
 const BASE_URL = 'https://api.themoviedb.org/3/discover/movie?language=ko-KR&without_genres=10749&page=1&api_key=5cbcc190dfddff747f1a38eea2f7b053&with_origin_country=';
 
-const getUrl = countryCode => BASE_URL+countryCode;
+const COUNTRY_CODES = ["KR", "US", "JP"];
+
+const getUrl = countryCode => BASE_URL + countryCode;
+
 
 // API 데이터 가져오기 (KR, US, JP)
-async function fetchData(countryCode, processData) {
+async function fetchData(countryCode, searchKey) {
     try {
-        const res = await fetch(getUrl(countryCode));
-        data = await res.json(); 
-        processData(data); 
+        if (countryCode !== "") {
+            const res = await fetch(getUrl(countryCode));
+            data = await res.json();
+            processCountryData(countryCode, data);
+        } else {
+            const data1 = await fetch(getUrl("KR")).then((data) => data.json());
+            const data2 = await fetch(getUrl("US")).then((data) => data.json());
+            const data3 = await fetch(getUrl("JP")).then((data) => data.json());
+
+            mergeAllData(data1, data2, data3, searchKey);
+
+        }
+
     } catch (e) {
         console.error(e);
     }
 }
 
-function processDataKr(data) {
-    createHTML("KR", data);
-}
-
-function processDataUS(data){
-    console.log(data);
-
-}
-
-function processDataJP(data){
+// KR, US, JP ...
+function processCountryData(countryCode, data) {
     console.log(data);
 }
 
-fetchData("KR", processDataKr);
-fetchData("US", processDataUS);
-fetchData("JP", processDataJP);
+COUNTRY_CODES.forEach((code) => fetchData(code, ""));
 
+// 전체 데이터 병합 (KR + US + JP ...)
+function mergeAllData(data1, data2, data3, searchKey) {
+    const data = [{searchKey: searchKey}, ...data1.results, ...data2.results, ...data3.results];
+    sortAllData(data);
+}
 
-function createHTML(countryCode, data){
-
+// 전체 데이터 인기순 정렬
+function sortAllData(data) {
+    data.sort((a, b) => b.vote_average - a.vote_average);
     console.log(data);
+}
+
+function processAllData(data1, data2, data3) {
+    const data = [...data1.results, ...data2.results, ...data3.results];
+
+}
+
+// 전체데이터 기본 로드
+fetchData("", "");
+
+
+function createHTML(countryCode, data) {
+
+    // console.log(data);
     const movieListKr = document.getElementById("movieListKr");
 
 
 }
 
+
+
+
+document.getElementById('inputSearch').addEventListener('input', function (e) {
+
+
+    // let text = this.value;
+    let text = this.value;
+    let target = H.divideHangul("범죄도시").join('');
+
+    console.log(H.includesByCho(text, "범죄도시"));
+
+});
+
+
+function checkTextInTitle(text, target){
+
+
+}
 
