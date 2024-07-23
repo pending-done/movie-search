@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const thumb = document.querySelector('.thumb');
     const scrollbar = document.querySelector('.scrollbar');
     const content = document.querySelector('body');
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let startTop;
 
 
-    scrollbar.addEventListener('mousedown', function(event) {
+    scrollbar.addEventListener('mousedown', function (event) {
         // mousedown => 해당 위치로 스크롤
         const clickY = event.clientY - scrollbar.getBoundingClientRect().top;
         const thumbTop = clickY - thumb.clientHeight / 2;
@@ -20,14 +20,16 @@ document.addEventListener('DOMContentLoaded', function() {
         startY = event.clientY;
         startTop = thumb.offsetTop;
         document.body.style.userSelect = 'none';
+
+        updateColorByScroll( [239, 179, 59], [45, 99, 167], scrollPercent);
     });
 
-    document.addEventListener('mouseup', function() {
+    document.addEventListener('mouseup', function () {
         isDragging = false;
         document.body.style.userSelect = '';
     });
 
-    document.addEventListener('mousemove', function(event) {
+    document.addEventListener('mousemove', function (event) {
         if (!isDragging) return;
 
         const dy = event.clientY - startY;
@@ -39,11 +41,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         if (!isDragging) {
             const scrollPercent = window.scrollY / (content.scrollHeight - window.innerHeight);
             const newTop = scrollPercent * (scrollbar.clientHeight - thumb.clientHeight);
             thumb.style.top = `${newTop}px`;
+
+            updateColorByScroll( [239, 179, 59], [45, 99, 167], scrollPercent);
         }
     });
+
+    function updateColorByScroll(start, end, scrollPercent){
+            // 그라데이션 색상 변경
+            let startColor = start;// 시작 색상 (RGB)
+            let endColor = end; // 끝 색상 (RGB)
+            const currentColor = startColor.map((start, index) => {
+                const end = endColor[index];
+                return Math.round(start + (end - start) * scrollPercent);
+            });
+            thumb.style.backgroundColor = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
+    }
 });
