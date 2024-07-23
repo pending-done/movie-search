@@ -23,6 +23,7 @@ const COUNTRY_CODES = ["KR", "US", "JP"];
 
 const getUrl = countryCode => BASE_URL + countryCode;
 
+let menu = "all";
 
 // API 데이터 가져오기 (KR, US, JP)
 async function fetchData(countryCode, searchKey) {
@@ -50,7 +51,8 @@ function processCountryData(countryCode, data) {
     console.log(data);
 }
 
-COUNTRY_CODES.forEach((code) => fetchData(code, ""));
+// 국가별 데이터 한번에 가져오기 (메뉴별로 페이지 나누게 되어서 필요 없어짐)
+// COUNTRY_CODES.forEach((code) => fetchData(code, ""));
 
 // 전체 데이터 병합 (KR + US + JP ...)
 function mergeAllData(data1, data2, data3, searchKey) {
@@ -60,9 +62,9 @@ function mergeAllData(data1, data2, data3, searchKey) {
 
 // 전체 데이터 인기순 정렬
 function sortAllData(data, searchKey) {
-    data.sort((a, b) => b.vote_average - a.vote_average);
+    data.sort((a, b) => b.popularity - a.popularity);
 
-    if(searchKey !== ""){
+    if (searchKey !== "") {
         data = getSearchAllData(data, searchKey);
         console.log(data);
     }
@@ -71,29 +73,109 @@ function sortAllData(data, searchKey) {
 }
 
 function processAllData(data) {
+
+    data.forEach(data => {
+        createHTML(data);
+        // imgPath: "https://image.tmdb.org/t/p/original"+data.backdrop_path,
+        // title: data.title,
+        // release_date: data.release_date,
+        // overview: data.overview,
+        // popularity: data.popularity,
+        // vote_average: data.vote_average,
+        // vote_count: data.vote_count;
+
+    });
+
 }
 
-function getSearchAllData(data, searchKey){
+
+/**
+ * 아래 형태의 html 생성
+ * <div class="movie-card">
+        <div class="image">
+            <a class="image" href="#" title="인사이드 아웃 2">
+                <img class="card-img" src="https://image.tmdb.org/t/p/w342/pmemGuhr450DK8GiTT44mgwWCP7.jpg">
+            </a>
+        </div>
+        <div class="content">
+            <h2>인사이드 아웃 2</h2>
+            <p>2024-06-11</p>
+        </div>
+    </div>
+ */
+
+function createHTML(data) {
+    console.log(data);
+    const imgPath = "https://image.tmdb.org/t/p/w342" + data.poster_path;
+    const title = data.title;
+    const release_date = data.release_date || '2024-01-01';
+    const overview = data.overview;
+    const popularity = data.popularity;
+    const vote_average = data.vote_average;
+    const vote_count = data.vote_count;
+
+    const movieList = document.getElementById('movieList');
+    
+    // div.movie-card 
+    let movieCard = document.createElement("div");
+    movieCard.classList.add("movie-card");
+
+    /* * * * * * * * * * * 사진 영역 * * * * * * * * * * * * */
+    // div.movie-card > div.image
+    let imageDiv = document.createElement("div");
+    imageDiv.classList.add("image");
+
+    // div.movie-card > div.image > a.image
+    let imageLink = document.createElement("a");
+    imageLink.classList.add("image");
+    imageLink.href = "#";
+    imageLink.title = title;
+
+    // div.movie-card > div.image > a.image > img.card-img
+    let image = document.createElement("img");
+    image.classList.add("card-img");
+    image.src = imgPath;
+
+    imageLink.appendChild(image);
+    imageDiv.appendChild(imageLink);
+    movieCard.appendChild(imageDiv);
+
+
+    /* * * * * * * * * * * 정보 영역 * * * * * * * * * * * * */
+    // div.movie-card > div.content
+    let contentDiv = document.createElement("div");
+    contentDiv.classList.add("content");
+
+    // div.movie-card > div.content > h2
+    let h2 = document.createElement("h2");
+    h2.textContent = title;
+
+    // div.movie-card > div.content > p
+    let p = document.createElement("p");
+    p.textContent = release_date;
+
+    contentDiv.appendChild(h2);
+    contentDiv.appendChild(p);
+    movieCard.appendChild(contentDiv);
+
+    // 최종 추가 (movie-card 생성)    
+    movieList.appendChild(movieCard);
+}
+
+function getSearchAllData(data, searchKey) {
     return data.filter((value) => {
         const title = value.title.replace(/ /g, '')
-        return H.includesByCho(searchKey, title)}
+        return H.includesByCho(searchKey, title)
+    }
     )
 }
 
 
-
-
 // 전체데이터 기본 로드
-fetchData("", "");
+fetchData("", "")
 
 
-function createHTML(countryCode, data) {
 
-    // console.log(data);
-    const movieListKr = document.getElementById("movieListKr");
-
-
-}
 
 
 document.getElementById('inputSearch').addEventListener('input', function (e) {
@@ -107,7 +189,7 @@ document.getElementById('inputSearch').addEventListener('input', function (e) {
 });
 
 
-function checkTextInTitle(text, target){
+function checkTextInTitle(text, target) {
 
 
 }
