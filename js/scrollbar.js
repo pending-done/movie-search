@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
         startTop = thumb.offsetTop;
         document.body.style.userSelect = 'none';
 
-        updateColorByScroll( [239, 179, 59], [45, 99, 167], scrollPercent);
+        updateColorByScroll ([215,210,204],[48,67,82], scrollPercent);
     });
 
     document.addEventListener('mouseup', function () {
@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const scrollPercent = newTop / (scrollbar.clientHeight - thumb.clientHeight);
         window.scrollTo(0, scrollPercent * (content.scrollHeight - window.innerHeight));
+
+        updateColorByScroll ([215,210,204],[48,67,82], scrollPercent);
     });
 
 
@@ -47,18 +49,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const newTop = scrollPercent * (scrollbar.clientHeight - thumb.clientHeight);
             thumb.style.top = `${newTop}px`;
 
-            updateColorByScroll( [239, 179, 59], [45, 99, 167], scrollPercent);
+            updateColorByScroll ([215,210,204],[48,67,82], scrollPercent);
         }
     });
 
-    function updateColorByScroll(start, end, scrollPercent){
-            // 그라데이션 색상 변경
-            let startColor = start;// 시작 색상 (RGB)
-            let endColor = end; // 끝 색상 (RGB)
-            const currentColor = startColor.map((start, index) => {
-                const end = endColor[index];
-                return Math.round(start + (end - start) * scrollPercent);
-            });
-            thumb.style.backgroundColor = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
+    function updateColorByScroll(start, end, scrollPercent) {
+        // 그라데이션 색상 변경 (2가지)
+        let startColor = start;// 시작 색상 (RGB)
+        let endColor = end; // 끝 색상 (RGB)
+        const currentColor = startColor.map((start, index) => {
+            const end = endColor[index];
+            return Math.round(start + (end - start) * scrollPercent);
+        });
+        thumb.style.backgroundColor = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]})`;
     }
 });

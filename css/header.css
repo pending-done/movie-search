@@ -23,15 +23,21 @@
     flex-direction: column;
     /* 세로 정렬을 위해 column으로 설정 */
     background-color: rgb(32, 29, 29);
-    padding: 3px 10px 3px 10px;
+    
 
     /* border: 1px solid #1f0b0b; */
     border-radius: 4px;
 }
 
 .menu-box>span {
+    padding: 3px 10px 3px 10px;
     font-size: 20px;
     /* margin-top: 5px; */
+}
+
+.menu-text:hover{
+    background-color: black;
+    color: white;
 }
 
 
