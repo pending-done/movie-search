@@ -54,20 +54,34 @@ COUNTRY_CODES.forEach((code) => fetchData(code, ""));
 
 // 전체 데이터 병합 (KR + US + JP ...)
 function mergeAllData(data1, data2, data3, searchKey) {
-    const data = [{searchKey: searchKey}, ...data1.results, ...data2.results, ...data3.results];
-    sortAllData(data);
+    const data = [...data1.results, ...data2.results, ...data3.results];
+    sortAllData(data, searchKey);
 }
 
 // 전체 데이터 인기순 정렬
-function sortAllData(data) {
+function sortAllData(data, searchKey) {
     data.sort((a, b) => b.vote_average - a.vote_average);
-    console.log(data);
+
+    if(searchKey !== ""){
+        data = getSearchAllData(data, searchKey);
+        console.log(data);
+    }
+
+    processAllData(data);
 }
 
-function processAllData(data1, data2, data3) {
-    const data = [...data1.results, ...data2.results, ...data3.results];
-
+function processAllData(data) {
 }
+
+function getSearchAllData(data, searchKey){
+    return data.filter((value) => {
+        const title = value.title.replace(/ /g, '')
+        return H.includesByCho(searchKey, title)}
+    )
+}
+
+
+
 
 // 전체데이터 기본 로드
 fetchData("", "");
@@ -82,16 +96,13 @@ function createHTML(countryCode, data) {
 }
 
 
-
-
 document.getElementById('inputSearch').addEventListener('input', function (e) {
 
-
     // let text = this.value;
-    let text = this.value;
-    let target = H.divideHangul("범죄도시").join('');
+    // let target = H.divideHangul("범죄도시").join('');
+    // console.log(H.includesByCho(text, "범죄도시"));
 
-    console.log(H.includesByCho(text, "범죄도시"));
+    fetchData("", this.value);
 
 });
 

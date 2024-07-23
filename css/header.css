@@ -1,40 +1,52 @@
-/* header 섹션 */
 .header{
     /* background-color: rgb(20, 20, 20); */
-    background-color: green;
-    width: 100vw;
+    width: 90%;
     height: 68px;
+
+    margin: 0px auto 0px auto;
     /* display: flex; */
     /* justify-content: space-around; */
+
+    /* !!! */
+    position: relative;
+    z-index: 2;
 }
 
-/* header div */
 .header-box{
-    width: 100%;
+    width: 80%;
     height: 100%;
+    margin: 0px auto 0px auto;
+
     display: flex;
     align-items: center;
     justify-content: space-around;
     
 }
 
-/* header-box > logo-box */
 .logo-box{
-    width: 5%;
+    min-width: 33%;
     color: red;
 }
-/* header-box > menu-box */
 .menu-box{
+    min-width: 34%;
+
+    display: flex;
+    justify-content: space-evenly;
+
+    
     color: white;
-    width: 60%;
+    /* width: 60%; */
 }
-/* header-box > search-box */
 .search-box{
-    width: 25%;
+    min-width: 33%;
+
     display: flex;
     justify-content: end;
+    /* width: 20%; */
 }
 
 .search-box > input{
     color: white;
+    width: 80%;
 }
+
