@@ -111,16 +111,9 @@ function clearHTML(){
     while(movieCard.length > 0){
         movieCard[0].parentNode.removeChild(movieCard[0]);
     }
-
-    debugger;
 }
 
 function createHTML(data) {
-    
-    debugger;
-
-
-
     const imgPath = "https://image.tmdb.org/t/p/w342" + data.poster_path;
     const title = data.title;
     const release_date = data.release_date || '2024-01-01';
@@ -184,9 +177,10 @@ function getSearchAllData(data, searchKey) {
         const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
 
         // searchKey = Hangul.disassemble(searchKey).join('');
-        return H.includesByCho(searchKey, title)
-    }
-    )
+        // searchKey = H.divideByJong(searchKey);
+
+        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
+    })
 }
 
 
