@@ -66,6 +66,7 @@ function sortAllData(data, searchKey) {
 
     if (searchKey !== "") {
         data = getSearchAllData(data, searchKey);
+
         console.log(data);
     }
 
@@ -73,6 +74,7 @@ function sortAllData(data, searchKey) {
 }
 
 function processAllData(data) {
+    clearHTML();
 
     data.forEach(data => {
         createHTML(data);
@@ -104,8 +106,21 @@ function processAllData(data) {
     </div>
  */
 
+function clearHTML(){
+    let movieCard = document.getElementsByClassName('movie-card');
+    while(movieCard.length > 0){
+        movieCard[0].parentNode.removeChild(movieCard[0]);
+    }
+
+    debugger;
+}
+
 function createHTML(data) {
-    console.log(data);
+    
+    debugger;
+
+
+
     const imgPath = "https://image.tmdb.org/t/p/w342" + data.poster_path;
     const title = data.title;
     const release_date = data.release_date || '2024-01-01';
@@ -114,11 +129,13 @@ function createHTML(data) {
     const vote_average = data.vote_average;
     const vote_count = data.vote_count;
 
-    const movieList = document.getElementById('movieList');
     
+    const movieList = document.getElementById('movieList');
+
     // div.movie-card 
     let movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
+    movieCard.id = "movieCard";
 
     /* * * * * * * * * * * 사진 영역 * * * * * * * * * * * * */
     // div.movie-card > div.image
@@ -164,7 +181,9 @@ function createHTML(data) {
 
 function getSearchAllData(data, searchKey) {
     return data.filter((value) => {
-        const title = value.title.replace(/ /g, '')
+        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
+
+        // searchKey = Hangul.disassemble(searchKey).join('');
         return H.includesByCho(searchKey, title)
     }
     )
