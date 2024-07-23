@@ -15,30 +15,28 @@
 
 <body>
     <!-- body 영역 전체? 에 img 크게 넣기 1등 영화 (불투명도, contain?) -->
-    <section class="header">
-        <div class="header-box">
-            <div class="logo-box">
-                <div class="menu-logo">FlixCatcher</div>
-            </div>
-            <div class="menu-box">
-                <span class="menu-text" id="ALL">전체</span>
-                <span class="menu-text" id="KR">한국</span>
-                <span class="menu-text" id="US">미국</span>
-                <span class="menu-text" id="JP">일본</span>
-            </div>
-            <div class="search-box">
-                <input type="text" class="input-search" id="inputSearch" />
-            </div>
+    <div class="header">
+        <div class="logo-box">
+            <div class="logo">Flix Catcher</div>
         </div>
-    </section>
+        <div class="search-box">
+            <input type="text" class="input-search" id="inputSearch" />
+        </div>
+    </div>
     <div class="movie-container">
         <div class="movie-list" id="movieList">
-            <div class="menu-selected" id="menu">전체</div>
+            <!-- <div class="menu-selected" id="menu">전체</div> -->
             <!-- movie-data list -->
         </div>
     </div>
 
-    
+
+    <div class="menu-box">
+        <span class="menu-text" id="ALL"><a href="#">전체</a></span>
+        <span class="menu-text" id="KR"><a href="#">한국</a></span>
+        <span class="menu-text" id="US"><a href="#">미국</a></span>
+        <span class="menu-text" id="JP"><a href="#">일본</a></span>
+    </div>
 
     <div class="scrollbar">
         <div class="thumb"></div>
