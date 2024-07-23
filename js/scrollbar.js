@@ -1,17 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const content = document.querySelector('.movie-container');
     const thumb = document.querySelector('.thumb');
     const scrollbar = document.querySelector('.scrollbar');
-
-    const updateThumbHeight = () => {
-        const viewportHeight = window.innerHeight;
-        const contentHeight = content.scrollHeight;
-        const thumbHeight = Math.max(viewportHeight / contentHeight * scrollbar.clientHeight, 20); // 최소 높이 20px
-        thumb.style.height = `${thumbHeight}px`;
-    };
-
-    updateThumbHeight();
-
+    const content = document.querySelector('body');
     let isDragging = false;
     let startY;
     let startTop;
@@ -20,12 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
         isDragging = true;
         startY = event.clientY;
         startTop = thumb.offsetTop;
-        document.body.style.userSelect = 'none'; 
+        document.body.style.userSelect = 'none';  // 텍스트 선택 비활성화
     });
 
     document.addEventListener('mouseup', function() {
         isDragging = false;
-        document.body.style.userSelect = '';  
+        document.body.style.userSelect = '';  // 텍스트 선택 활성화
     });
 
     document.addEventListener('mousemove', function(event) {
@@ -46,6 +36,4 @@ document.addEventListener('DOMContentLoaded', function() {
             thumb.style.top = `${newTop}px`;
         }
     });
-
-    window.addEventListener('resize', updateThumbHeight);
 });
