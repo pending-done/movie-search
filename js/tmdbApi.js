@@ -27,7 +27,7 @@ function getUrl(countryCode){
 }
 
 // API 데이터 가져오기 (KR, US, JP)
-async function fetchData(countryCode, searchKey) {
+async function fetchData(countryCode, searchKey) { // searchKey = 내가 입력한 문자
     try {
         if (countryCode === "ALL") {
             const data1 = await fetch(getUrl("KR")).then((data) => data.json());
@@ -39,7 +39,6 @@ async function fetchData(countryCode, searchKey) {
             const res = await fetch(getUrl(countryCode));
             
             data = await res.json();
-            // processCountryData(data, "");
             sortByPopularityDesc([...data.results], searchKey);
         }
     } catch (e) {

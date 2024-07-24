@@ -6,7 +6,6 @@ function mergeAllData(data1, data2, data3, searchKey) {
     sortByPopularityDesc(data, searchKey);
 }
 
-
 // 데이터 인기순 정렬 (b.popularity - a.popularity)
 function sortByPopularityDesc (data, searchKey) {
     data.sort((a, b) => b.popularity - a.popularity);
@@ -21,6 +20,8 @@ function sortByPopularityDesc (data, searchKey) {
 
 // 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
 function getSearchAllData(data, searchKey) {
+
+    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
     return data.filter((value) => {
         const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
         return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
@@ -32,6 +33,7 @@ function getSearchAllData(data, searchKey) {
 function processData(data) {
     clearHTML();
 
+    // 배열의 요소를 순회하면서 
     data.forEach(data => {
         createHTML(data);
     });
@@ -46,6 +48,7 @@ function clearHTML() {
 }
 
 // HTML Create
+
 function createHTML(data) {
     // imgSize : [w92, w154, w185, w342, w500, w780, original]
     const imgPath = "https://image.tmdb.org/t/p/w342" + data.poster_path;   
@@ -110,6 +113,7 @@ function createHTML(data) {
 
 // 검색 입력 이벤트
 document.getElementById('inputSearch').addEventListener('input', function (e) {
+
     fetchData("ALL", this.value);
 });
 
