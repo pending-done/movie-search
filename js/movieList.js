@@ -1,25 +1,8 @@
 let menu;
 
-// 전체 데이터 병합 (KR + US + JP to All Data)
-function mergeAllData(data1, data2, data3, searchKey) {
-    const data = [...data1.results, ...data2.results, ...data3.results];
-    sortByPopularityDesc(data, searchKey);
-}
-
-// 데이터 인기순 정렬 (b.popularity - a.popularity)
-function sortByPopularityDesc (data, searchKey) {
-    data.sort((a, b) => b.popularity - a.popularity);
-
-    if (searchKey !== "") {
-        data = getSearchAllData(data, searchKey);
-
-        console.log(data);
-    }
-    processData(data);
-}
 
 // 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
-function getSearchAllData(data, searchKey) {
+function searchAllData(data, searchKey) {
 
     // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
     return data.filter((value) => {
@@ -30,14 +13,20 @@ function getSearchAllData(data, searchKey) {
 
 
 // 데이터 처리
-function processData(data) {
+const processData = (data) => {
     clearHTML();
 
-    // 배열의 요소를 순회하면서 
     data.forEach(data => {
         createHTML(data);
     });
 }
+// function processData(data) {
+//     clearHTML();
+
+//     data.forEach(data => {
+//         createHTML(data);
+//     });
+// }
 
 // HTML Clear
 function clearHTML() {
@@ -51,9 +40,10 @@ function clearHTML() {
 
 function createHTML(data) {
     // imgSize : [w92, w154, w185, w342, w500, w780, original]
-    const imgPath = "https://image.tmdb.org/t/p/w342" + data.poster_path;   
+    const imgPath = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+    const imgLink = `/detail/detail.html?id=${data.id}`;
     const title = data.title;
-    const release_date = data.release_date || '2024-01-01';
+    const release_date = data.release_date || '2024-01-01'; // 날짜 없는 애들 더미용
     const overview = data.overview;
     const popularity = data.popularity;
     const vote_average = data.vote_average;
@@ -74,7 +64,7 @@ function createHTML(data) {
     // div.movie-card > div.image > a.image
     let imageLink = document.createElement("a");
     imageLink.classList.add("image");
-    imageLink.href = "#";
+    imageLink.href = imgLink;
     imageLink.title = title;
 
     // div.movie-card > div.image > a.image > img.card-img
@@ -118,13 +108,12 @@ document.getElementById('inputSearch').addEventListener('input', function (e) {
 });
 
 
-
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    fetchData(target.id, "")
+    fetchData(target.id, "", processData)
 }))
 
 
 
 // 페이지 로드 (전체데이터)
-fetchData("ALL", "")
+fetchData("ALL", "", processData);

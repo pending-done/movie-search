@@ -29,5 +29,5 @@ TMDB API를 이용하여 영화를 검색하는 페이지입니다.
 ![html](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)
 ![css](    https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white)   
 <br/>
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=LeeJY97&theme=blue-green)
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=LeeJY97&exclude_repo=sparta_first,sparta_jsrunning_train&theme=blue-green)
 

@@ -12,6 +12,21 @@
     position: relative;
 }
 
+a:link {
+    color: white;
+    text-decoration: none;
+}
+
+a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
 .menu-box {
     position: fixed;
     top: 50%;
