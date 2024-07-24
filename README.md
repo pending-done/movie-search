@@ -1,25 +1,33 @@
-# 영화 검색 페이지
-이 프로젝트는 영화 정보를 검색하고 나열하는 간단한 웹 페이지입니다. 오픈 API를 이용하여 영화의 제목, 출연진, 감독, 포스터 이미지 등을 가져와 사용자에게 보여줍니다.
+# Flix Catcher
+TMDB API를 이용하여 영화를 검색하는 페이지입니다. 
 
-# 기능
-- 영화 검색 기능
-- 영화 목록을 페이지에 나열
-- 각 영화에 대한 정보 표시 
----
+## Preview
+![image](https://github.com/user-attachments/assets/324e8c2c-c9d0-4427-8cad-e26a543fe211)
 
+## 기능
+- 영화 목록
+    - 메뉴별 영화 목록 (전체, 한국, 미국, 일본...)
+    - 전체 목록
+        - 국가별 전체 영화를 인기순으로 목록에 출력
+    - 국가별 목록
+        - 메뉴 선택 시 국가별 출력
+    - 영화에 대한 간략한 정보 표시   
+    <br/>
+- 영화 검색
+    - 실시간 검색 기능 (페이지 새로고침 X)
+    - 초성 검색 기능 
+        - ex) ㅇㅅㅇㄷ아웃 => 인사이드아웃   
+    <br/>
 
-# 사용 기술
-- HTML, CSS, JavaScript (jQuery X) .. 
-- TMDB API (영화 정보 오픈 API)
----
-
-# 코딩 스타일 가이드
-1. 변수 선언은 const, let 사용 (var X)
+## 코딩 스타일 가이드
+1. 변수 선언은 const, let 사용
 2. 변수, 함수 명명 규칙: camelCase
-3. 상수 명명 규칙: 대문자와 '_' 언더바 사용
-4. 오직 JavaScript 사용하여 기능 구현 (JQuery X)
----
 
-# 프로젝트 일정
-24.07.22 ~ 24.07.29
+## 사용 기술
+
+![js](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white)
+![html](https://img.shields.io/badge/HTML-239120?style=for-the-badge&logo=html5&logoColor=white)
+![css](    https://img.shields.io/badge/CSS-239120?&style=for-the-badge&logo=css3&logoColor=white)   
+<br/>
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=LeeJY97&theme=blue-green)
 

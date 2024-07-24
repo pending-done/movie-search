@@ -1,0 +1,26 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+
+
+.scrollbar {
+    position: fixed;
+    top: 50%;
+    right: 60px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 300px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
+
+.thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background-color: rgb(215,210,204);
+    border-radius: 10px;
+    cursor: pointer;
+}

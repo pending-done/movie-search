@@ -1,11 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="./css/header.css" />
+    <link rel="stylesheet" href="./css/footer.css" />
+    <link rel="stylesheet" href="./css/common.css" />
+    <link rel="stylesheet" href="./css/movie.css" />
+    <link rel="stylesheet" href="./css/scrollbar.css" />
+
+    <title>FlixCatcher</title>
 </head>
+
 <body>
-    
+    <!-- body 영역 전체? 에 img 크게 넣기 1등 영화 (불투명도, contain?) -->
+    <div class="header">
+        <div class="logo-box">
+            <div class="logo">Flix Catcher</div>
+        </div>
+        <div class="search-box">
+            <input type="text" class="input-search" id="inputSearch" />
+        </div>
+    </div>
+    <div class="movie-container">
+        <div class="movie-list" id="movieList">
+            <!-- <div class="menu-selected" id="menu">전체</div> -->
+            <!-- movie-data list -->
+        </div>
+    </div>
+
+
+    <div class="menu-box">
+        <span class="menu-text" id="ALL"><a href="#">전체</a></span>
+        <span class="menu-text" id="KR"><a href="#">한국</a></span>
+        <span class="menu-text" id="US"><a href="#">미국</a></span>
+        <span class="menu-text" id="JP"><a href="#">일본</a></span>
+    </div>
+
+    <div class="scrollbar">
+        <div class="thumb"></div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <h3>6조 일원</h3>
+                <p>우리집에서 만듬</p>
+            </div>
+            <div class="footer-right">
+                <p><a href="#">Home</a> | <a href="https://reactjy2.tistory.com">blog</a> | <a href="#">Contact</a></p>
+                <p>Follow us: SNS는 하지 않는 사람</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024. 대충 있어보이는 문구</p>
+        </div>
+    </footer>
+
+
+    <script src="https://unpkg.com/hangul-util/dist/bundle.js"></script>
+    <script type="text/javascript" src="./js/scrollbar.js"></script>
+    <script type="text/javascript" src="./js/tmdbApi.js"></script>
+    <script type="text/javascript" src="./js/index.js"></script>
 </body>
+
 </html>
