@@ -26,7 +26,6 @@ const options = {
 const API_KEY = '5cbcc190dfddff747f1a38eea2f7b053';
 const BASE_URL = `https://api.themoviedb.org/3/discover/movie?language=ko-KR&without_genres=10749&page=1&api_key=${API_KEY}&with_origin_country=`;
 const COUNTRY_CODES = ["KR", "US", "JP"];   //enum 
-
 function getUrl(countryCode){
     if(countryCode === "JP"){
         return BASE_URL + countryCode + "&with_genres=16";

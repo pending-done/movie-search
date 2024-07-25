@@ -13,45 +13,48 @@
 
 <body>
     <div class="header">
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+          </div>
+          
         <div class="logo-box" onclick="location.href='/index.html'">
             <div class="logo">Flix Catcher</div>
         </div>
     </div>
     <div class="main-container">
         <div class="back-poster-container">
-            <img class="back-poster-img" src="https://image.tmdb.org/t/p/original/xg27NrXi7VXCGUr7MG75UqLl6Vg.jpg">
+            <img class="back-poster-img" id="backPosterImg">
         </div>
         <div class="movie-info-container">
-            <div class="inner"> <!-- position의 영향을 받지 않는 -->
+            <div class="inner">
                 <div class="info-container">
                     <div class="movie-poster-container">
-                        <img class="movie-poster-img"
-                            src="https://image.tmdb.org/t/p/original/pmemGuhr450DK8GiTT44mgwWCP7.jpg">
+                        <img class="movie-poster-img" id="moviePosterImg">
                     </div>
                     <div class="movie-info">
                         <div class="title-container">
-                            <h1 class="detail-title-01" id="detailTitle01">인사이드 아웃</h1>
-                            <h3 class="detail-title-02" id="detailTitle02">인사이드 아웃</h3>
+                            <h1 class="detail-title-01" id="detailTitle01"></h1>
+                            <h3 class="detail-title-02" id="detailTitle02"></h3>
                         </div>
                         <div class="genres-container">
                             <h3 class="detail-genres-01" id="detailGenres01">장르</h3>
-                            <p class="detail-genres-02" id="detailGenres02">장르</p>
+                            <p class="detail-genres-02" id="detailGenres02"></p>
                         </div>
                         <div class="country-container">
-                            <h3 class="detail-country-01" id="detailCountry01">발매국가</h3>
-                            <p class="detail-country-01" id="detailCountry02">미국</p>
+                            <h3 class="detail-country-01" id="detailCountry01">발매국</h3>
+                            <p class="detail-country-01" id="detailCountry02"></p>
                         </div>
                         <div class="date-container">
-                            <h3 class="detail-date-01" id="detaildate">발매일</h3>
-                            <p class="detail-date-01" id="detaildate">2020-02-02</p>
+                            <h3 class="detail-date-01" id="detailDate01">발매일</h3>
+                            <p class="detail-date-02" id="detailDate02"></p>
                         </div>
                     </div>
                 </div>
                 <div class="movie-summary">
-                    <h2 class="detail-summary-01" id="detailSummary01">대충 부제목같은 느낌!!</h2>
-                    <p class="detail-summary-02" id="detailSummary01">
-                        대충 블라블라블라블라블라블라대충 블라블라블라블라블라블라
-                    </p>
+                    <div>
+                        <h2 class="detail-summary-01" id="detailSummary01"></h2>
+                        <p class="detail-summary-02" id="detailSummary02"></p>
+                    </div>
                 </div>
 
             </div>
