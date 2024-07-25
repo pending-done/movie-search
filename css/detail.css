@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
 
+@font-face {
+    font-family: 'SBAggroB';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 .header {
     width: 100%;
@@ -12,6 +18,15 @@
     /* position: fixed; */
     /* z-index: 1;
     opacity : 0.5; */
+}
+
+h1{
+    font-family: 'SBAggroB', cursive;
+    color:#efb33b;
+}
+
+h3{
+    font-family: 'SBAggroB', cursive;
 }
 
 .logo-box {
@@ -126,7 +141,7 @@
 }
 
 /* 섹션 스타일링 */
-.same-genres {
+.sub-section {
     margin-bottom: 40px;
     /* 섹션 사이 간격 */
 }
@@ -138,10 +153,10 @@
     margin: 0px auto;
 }
 
-.section-header h1 {
+/* .section-header h1 {
     font-size: 1.5rem;
     font-weight: bold;
-}
+} */
 
 .section-body {
     margin: 0px auto;

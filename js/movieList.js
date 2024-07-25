@@ -103,17 +103,16 @@ function createHTML(data) {
 
 // 검색 입력 이벤트
 document.getElementById('inputSearch').addEventListener('input', function (e) {
-
-    fetchData("ALL", this.value, processData);
+    fetchData({countryCode:"ALL"}, this.value, processData);
 });
 
 
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    fetchData(target.id, "", processData)
+    fetchData({countryCode: target.id}, "", processData)
 }))
 
 
 
 // 페이지 로드 (전체데이터)
-fetchData("ALL", "", processData);
+fetchData({countryCode:"ALL"}, "", processData);
