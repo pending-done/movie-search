@@ -2,8 +2,11 @@
 TMDB API를 이용하여 영화를 검색하는 페이지입니다. 
 
 ## Preview
+### 메인
 ![image](https://github.com/user-attachments/assets/324e8c2c-c9d0-4427-8cad-e26a543fe211)
-
+### 상세
+![image](https://github.com/user-attachments/assets/95f6e3c0-3e81-4d50-b2f9-2374ed581b8f)
+![image](https://github.com/user-attachments/assets/77dba8ca-61dc-4711-8a6b-f678c2b49348)
 ## 기능
 ### 메인페이지
 - 영화 목록
