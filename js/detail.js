@@ -5,6 +5,8 @@ console.log(`Loading details for movie ID ${movieId}`);
 
 
 
+
+
 // 전체 영화중 id 비교해서 필터링, 
 const processData = (data) => {
     const movieObj = data.filter(movie => movie.id == movieId);

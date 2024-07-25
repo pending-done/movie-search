@@ -25,7 +25,7 @@ const options = {
 
 const API_KEY = '5cbcc190dfddff747f1a38eea2f7b053';
 const BASE_URL = `https://api.themoviedb.org/3/discover/movie?language=ko-KR&without_genres=10749&page=1&api_key=${API_KEY}&with_origin_country=`;
-const COUNTRY_CODES = ["KR", "US", "JP"];
+const COUNTRY_CODES = ["KR", "US", "JP"];   //enum 
 
 function getUrl(countryCode){
     if(countryCode === "JP"){
@@ -38,6 +38,7 @@ function getUrl(countryCode){
 async function fetchData(countryCode, searchKey, processData) { // searchKey = 내가 입력한 문자
     try {
         if (countryCode === "ALL") {
+            // 유지보수 문제 생길수있음
             const data1 = await fetch(getUrl("KR")).then((data) => data.json());
             const data2 = await fetch(getUrl("US")).then((data) => data.json());
             const data3 = await fetch(getUrl("JP")).then((data) => data.json());
@@ -46,6 +47,7 @@ async function fetchData(countryCode, searchKey, processData) { // searchKey = �
 
             mergeAllData(movieList, searchKey, processData);
         } else {
+            // 예외처리 (kr, us, jp 등이 아닐 경우)
             const res = await fetch(getUrl(countryCode));
             
             data = await res.json();
@@ -81,5 +83,3 @@ function sortByPopularityDesc (data, searchKey, processData) {
     // processData(data);
     processData(data);
 }
-
-

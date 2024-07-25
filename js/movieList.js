@@ -104,7 +104,7 @@ function createHTML(data) {
 // 검색 입력 이벤트
 document.getElementById('inputSearch').addEventListener('input', function (e) {
 
-    fetchData("ALL", this.value);
+    fetchData("ALL", this.value, processData);
 });
 
 
