@@ -29,6 +29,10 @@ h3{
     font-family: 'SBAggroB', cursive;
 }
 
+p{
+    font-family: 'SBAggroB', cursive;
+    color: white;
+}
 .logo-box {
     margin: 0px 0px 0px 30px;
     width: 40%;
@@ -190,6 +194,39 @@ h3{
 }
 
 
+/* 마우스 호버 시 스크롤바 색상 */
+.scrollbar-thumb:hover {
+}
+
+
+.actor-main-container {
+    display: flex;
+
+    overflow: hidden;
+    white-space: nowrap; /* 내부 요소를 한 줄에 나타내기 */
+}
+
+.actor-container{
+    flex: 0 0 10%;
+    /* width: 100%; */
+    box-sizing: border-box;
+    padding: 10px; /* 슬라이드 사이 간격 설정 */
+
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.actor-poster{
+    width: 200px;
+    height: 360px;
+    object-fit: cover;
+
+}
+/* ************************* */
+
+
+
 .progress {
     height: 5px;
     background-color: #333;
@@ -204,13 +241,9 @@ h3{
     background-color: #efb33b;
 }
 
-/* 마우스 호버 시 스크롤바 색상 */
-.scrollbar-thumb:hover {
+.progress .bar:hover{
+    background-color: red;
 }
-
-/* ************************* */
-
-
 
 
 

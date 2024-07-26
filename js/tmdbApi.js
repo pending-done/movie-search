@@ -75,6 +75,7 @@ function generateUrl(searchCriteria){
 
         // 일본이면 애니메이션 장르
         if(countryCode !== "JP"){
+            // return  `${BASE_URL}&with_origin_country=${countryCode}&with_genres=${genres[0].id ?? ""}`.toString();
             return  `${BASE_URL}&with_origin_country=${countryCode}&with_genres=${genres[0].id ?? ""}`.toString();
         }else{
             return `${BASE_URL}&with_origin_country=${countryCode}&with_genres=16&${genres[1].id ?? ""}`.toString();
@@ -119,13 +120,48 @@ async function fetchData(searchCriteria, searchKey, processData) { // searchKey 
 }
 
 
-// 영화 상세정보
-// async function fetchDetail(movieId){
-//     const DETAIL_URL = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`
-//     const data = await fetch(DETAIL_URL).then(data => data.json());
+// 영화 상세정보 (movieID)
+function generateDetailUrl(searchCriteria, movieId){
+    /**
+     * searchCriterial
+     * credits: 출연진(감독)  Acting(Directing)   //'https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR'
+     * images: 배우 사진 // https://api.themoviedb.org/3/person/${castId}/images
+     * 
+     * images: 스틸이미지?              
+     * 
+     * 배우 누르면 관련 영화 페이지 ?
+     *  
+     */
 
-//     processDetailData(data);
-// }
+    // 크레딧 (출연진, 감독)
+    if(searchCriteria.credits != null){
+        return `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-kr&api_key=${API_KEY}`
+    }
+
+    // 배우 사진
+    if(searchCriteria.actorId != null){
+        return `https://api.themoviedb.org/3/person/${searchCriteria.actorId}/images?api_key=${API_KEY}`
+    }
+
+}
+
+async function fetchDetail(movieId){
+    const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`
+    const data = await fetch(url).then(data => data.json());
+
+    processDetailData(data);
+}
+
+// 상세페이지 (하단 영역 데이터)
+async function fetchDetailSub(searchCriteria, movieId, processData){
+    const url = generateDetailUrl(searchCriteria, movieId);
+
+    debugger;
+
+    const data = await fetch(url).then(data => data.json());
+
+    processData(data);
+}
 
 
 // 데이터 인기순 정렬 (b.popularity - a.popularity)

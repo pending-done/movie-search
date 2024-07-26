@@ -22,18 +22,34 @@ function processDetailData(data) {
     // 상세 데이터 생성
     createDetailElement(data);
 
-    //  곧 개봉 생성
-    fetchData({ type: "upcoming", genres: data.genres }, "", processUpcomingData);
-
-    //  인기 데이터 생성
-    fetchData({ type: "topRated", genres: data.genres }, "", processPopularityData);
-
     // 장르 데이터 생성
     fetchData({ countryCode: data.origin_country[0], genres: data.genres }, "", processGenresData);
+    //  곧 개봉 생성
+    // fetchData({ type: "upcoming", genres: data.genres }, "", processUpcomingData);
+
+    //  인기 데이터 생성
+    // fetchData({ type: "topRated", genres: data.genres }, "", processPopularityData);
+
+    // 출연진 데이터
+    fetchDetailSub({credits: " "}, movieId, processActorData);
+
+    
     
 
     // 출연진 ?
 }
+
+
+const processActorData = (data) => {
+    console.log("배우 데이터");
+    console.log(data);
+
+    const result = data.cast.map(({ id, name }) => ({ id, name }));
+
+    console.log(result);
+}
+
+
 
 // 공통함수 싹다 합쳐야됨 processGenresData().... 등
 // ex) 내일할거임
@@ -58,8 +74,10 @@ const 임시함수 = (제목, 무슨데이터생성햇는가) => {
     });
 
     const mainContainer = document.querySelector('.main-container');
-    mainContainer.insertAdjacentElement('afterend', subContainer);
+    mainContainer.insertAdjacentElement('beforeend', subContainer);
 }
+
+
 
 
 const mainContainer = document.querySelector('.main-container');
