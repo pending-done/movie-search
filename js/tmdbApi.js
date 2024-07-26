@@ -1,19 +1,3 @@
-// 1997
-// 5cbcc190dfddff747f1a38eea2f7b053
-// 1. fetch('https://api.themoviedb.org/3/movie/top_rated?language=ko-KR&page=30', options)
-//  => 최고 평점 순 (다른 데이터 요청 방법 못찾음)
-// 2. fetch('https://api.themoviedb.org/3/discover/movie?api_key=5cbcc190dfddff747f1a38eea2f7b053&with_origin_country=KR&page=1&language=ko-KR&without_genres=10749', options)  
-// => 인기순, 제작 국가별(KR,US,JP), 언어(KR번역), genre_ids [10749] : 성인컨텐츠 (안가져옴)
-
-// 'https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR' 
-// => 영화 상세 정보 
-
-/**
- * 메인페이지, 상세페이지 공통 코드
- * api 연결 -> 데이터 병합 -> 데이터 정렬 -> 메인 or 상세 데이터 전달
- */
-
-
 // API 선언
 const options = {
     method: 'GET',
@@ -24,118 +8,161 @@ const options = {
 };
 
 const API_KEY = '5cbcc190dfddff747f1a38eea2f7b053';
-const BASE_URL = `https://api.themoviedb.org/3/discover/movie?language=ko-KR&without_genres=10749&page=1&api_key=${API_KEY}`;
-
-// const COUNTRY_CODES = {
-//     KR:'&with_origin_country=KR',
-//     US: '&with_origin_country=US',
-//     JP: '&with_origin_country=JP',
-// }; 
-
+const BASE_URL = 'https://api.themoviedb.org/3';
+const LANGUAGE = 'ko-KR';
+const WITHOUT_GENRES = '10749';
 const COUNTRY_CODES = ['KR', 'US', 'JP']
-
-// const searchCriteria = {
-//     countryCode: null,
-//     genres: null,
-//     id: null,
-// }
+const DUMMY_GENRES = [
+    { id: '' },
+    { id: '' },
+]
 
 
-function generateUrl(searchCriteria){
-
-    // 영화 id값으로 조회
-    if(searchCriteria.id != null){
-        const movieId = searchCriteria.id;
-
-        return `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
-    }
-
-    if(searchCriteria.type != null){
-        const type = searchCriteria.type;
-
-        if(type == "topRated"){
-            return `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=ko-KR`;
-        }else if(type == "upcoming"){
-            return `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=ko-KR&page=1`;
-        }
-        
-    }
-    
-
-    if(searchCriteria.countryCode !== "ALL"){
-        const countryCode = searchCriteria.countryCode;
-        let genres = searchCriteria.genres;
-
-        if(genres == null){
-            genres = [
-                {id:null},
-                {id:null},
-            ]
-        }
-
-        // 일본이면 애니메이션 장르
-        if(countryCode !== "JP"){
-            return  `${BASE_URL}&with_origin_country=${countryCode}&with_genres=${genres[0].id ?? ""}`.toString();
-        }else{
-            return `${BASE_URL}&with_origin_country=${countryCode}&with_genres=16&${genres[1].id ?? ""}`.toString();
-        }
-    }else if(searchCriteria.countryCode === "ALL"){
-        return COUNTRY_CODES.map((countryCode) => BASE_URL + '&with_origin_country=' + countryCode) //`${BASE_URL}'&with_origin_country=${code}`
-    }
-
-
-
-}
-
-// API 데이터 가져오기 (KR, US, JP)
-async function fetchData(searchCriteria, searchKey, processData) { // searchKey = 내가 입력한 문자
-    try {
-        const movieList = [];
-        if(searchCriteria === null) alert("데이터 불러올떄 에러났음");
-
-        if (searchCriteria.countryCode === "ALL") {
-            const urlArr = generateUrl(searchCriteria);
-
-            for(const url of urlArr){
-                const data = await fetch(url).then((data) => data.json());
-                movieList.push(...data.results);
-
-            }
-        } else {
-            // 예외처리 (kr, us, jp 등이 아닐 경우)
-            const data = await fetch(generateUrl(searchCriteria)).then((data) => data.json());
-
-            if(data.results == null){
-                processData(data);  // 상세 정보 (단일)
-                return;
-            }
-            movieList.push(...data.results);
-        }
-
-        sortByPopularityDesc(movieList, searchKey, processData);
-    } catch (e) {
-        console.error(e);
+function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null } = {}){
+    switch (type) {
+        case 'topRated':
+            return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}`;
+        case 'upcoming':
+            return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}`;
+        case 'genres':
+            if(!genres || !countryCode) throw new Error('무슨 장르 보고싶은데?');
+            return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
+        case 'detail':
+            if (!movieId) throw new Error('Movie ID가 없다네');
+            return `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${LANGUAGE}`;
+        case 'byCountries':
+            if (!countryCode || !genres) throw new Error('나라별 영화는 countryCode랑 genres가 필수이거늘');
+            if (countryCode === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
+            if (countryCode !== "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`
+        case 'credit':
+            if (!movieId) throw new Error('출연진을 보려면 movie ID를 넣어야지');
+            return `${BASE_URL}/movie/${movieId}/credits?language=${LANGUAGE}&api_key=${API_KEY}`;
+        case 'actorImg':
+            if (!actorId) throw new Error('배우사진을 보려면 actor ID를 넣어야지');
+            return `${BASE_URL}/person/${actorId}/images?api_key=${API_KEY}`;
+        case 'ALL':
+            if (!countryCode) throw new Error('전체영화 목록을 보려면 countryCode를 잊지마');
+            return COUNTRY_CODES.map((code) => {
+                if (code === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
+                return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
+            });
+        default:
+            throw new Error('url 어딘가 에러');
     }
 }
 
 
-// 영화 상세정보
-// async function fetchDetail(movieId){
-//     const DETAIL_URL = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`
-//     const data = await fetch(DETAIL_URL).then(data => data.json());
+/********************************* 메인 페이지 **********************************/
+// 전체 국가
+async function fetchAllMoviesData(searchKey, callback){
+    const urlArr = generateUrl("ALL", {countryCode:"ALL", genres:DUMMY_GENRES});
+    const movieList = [];
 
-//     processDetailData(data);
-// }
+    for (const url of urlArr) {
+        const data = await fetch(url).then((data) => data.json());
+        movieList.push(...data.results);
+    }
+
+    sortByPopularityDesc(movieList, searchKey, callback);
+}
 
 
-// 데이터 인기순 정렬 (b.popularity - a.popularity)
-function sortByPopularityDesc (data, searchKey, processData) {
+// 나라별
+async function fetchMoviesByCountry(countryCode, callback){
+    let url;
+
+    if(countryCode === "JP"){
+        url =  generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
+    }else{
+        url = generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
+    }
+
+    const data = await fetch(url).then((data) => data.json());
+    callback([...data.results]);
+};
+
+// 전체 데이터 인기순 정렬
+function sortByPopularityDesc(data, searchKey, callback) {
     data.sort((a, b) => b.popularity - a.popularity);
 
     if (searchKey !== '') {
         data = searchAllData(data, searchKey);
-
-        console.log(data);
     }
-    processData(data);
+    callback(data);
 }
+
+// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
+function searchAllData(data, searchKey) {
+
+    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
+    return data.filter((value) => {
+        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
+        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
+    })
+}
+
+
+
+/********************************** 상세페이지 **********************************/
+// 유형별 (인기, 장르, 곧 개봉 등)
+async function fetchTypeMoviesData(searchCriteria, callback){
+    let data;
+    if(searchCriteria.type === "topRated"){
+        const url = generateUrl("topRated");
+        data = await fetch(url).then((data) => data.json());
+    }else if(searchCriteria.type === "genres"){
+        const countryCode = searchCriteria.countryCode;
+        const genres = searchCriteria.genres;
+        const url = generateUrl("genres",{countryCode, genres} )
+        data = await fetch(url).then((data) => data.json());
+    }else if(searchCriteria.type === "upcoming"){
+        const url = generateUrl("upcoming");
+        data =  await fetch(url).then((data) => data.json());
+    }
+
+    callback([...data.results]);
+}
+
+
+// 영화 상세정보(단일데이터)
+async function fetchDetailMovieData(movieId, processMovieData){
+    //  const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
+     const url = generateUrl("detail", {movieId});
+     const data = await fetch(url).then(data => data.json());
+
+     processMovieData(data);
+}
+
+
+// 출연진, 배우사진
+async function fetchActorsData(movieId, callback) {
+    const url = generateUrl("credit", {movieId});
+    const credits = await fetch(url).then(data => data.json());
+    
+    // 배우 정보를 15 index까지 저장
+    // 부족할 경우 마지막 index 체크해서
+    // 다시 slice
+    let actors = credits.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
+    let sliceIndex = 0;
+    let shouldSliceArray = false;
+    for (const actor of actors) {
+        const url = generateUrl("actorImg", {actorId:actor.id});
+        const data = await fetch(url).then(data => data.json());
+
+        // 배우 상세정보가 없을때
+        if (!Array.isArray(data.profiles) || data.profiles.length === 0) {
+            shouldSliceArray = true;
+            break;
+        }
+
+        actor.file_path = data.profiles[0].file_path;
+        sliceIndex++;
+    }
+
+    if (shouldSliceArray) {
+        actors = actors.slice(0, sliceIndex);
+    }
+
+    callback(actors);
+}
+

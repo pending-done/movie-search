@@ -12,6 +12,9 @@
 </head>
 
 <body>
+    <div class="back">
+        <img class="back-img" id="back-img" src="https://image.tmdb.org/t/p/w1280/7U2m2dMSIfHx2gWXKq78Xj1weuH.jpg">
+    </div>
     <div class="header">
         <div class="loading-overlay" id="loadingOverlay">
             <div class="spinner"></div>
@@ -21,6 +24,7 @@
             <div class="logo">Flix Catcher</div>
         </div>
     </div>
+    
     <div class="main-container">
         <div class="back-poster-container">
             <img class="back-poster-img" id="backPosterImg">
@@ -32,20 +36,20 @@
                         <img class="movie-poster-img" id="moviePosterImg">
                     </div>
                     <div class="movie-info">
-                        <div class="title-container">
+                        <div class="title-container info-box">
                             <h1 class="detail-title-01" id="detailTitle01"></h1>
                             <h3 class="detail-title-02" id="detailTitle02"></h3>
                         </div>
-                        <div class="genres-container">
-                            <h3 class="detail-genres-01" id="detailGenres01">장르</h3>
+                        <div class="genres-container info-box">
+                            <h3 class="detail-genres-01 info-title" id="detailGenres01">장르</h3>
                             <p class="detail-genres-02" id="detailGenres02"></p>
                         </div>
-                        <div class="country-container">
-                            <h3 class="detail-country-01" id="detailCountry01">발매국</h3>
+                        <div class="country-container info-box">
+                            <h3 class="detail-country-01 info-title" id="detailCountry01">국가</h3>
                             <p class="detail-country-01" id="detailCountry02"></p>
                         </div>
-                        <div class="date-container">
-                            <h3 class="detail-date-01" id="detailDate01">발매일</h3>
+                        <div class="date-container info-box">
+                            <h3 class="detail-date-01 info-title" id="detailDate01">개봉일</h3>
                             <p class="detail-date-02" id="detailDate02"></p>
                         </div>
                     </div>
@@ -59,50 +63,23 @@
             </div>
         </div>
     </div>
-    <!-- <div class="sub-container">
+    <div class="sub-container actor">
         <section class="sub-section">
-            <div class="section-header">
-                <h1>비슷한 장르의 작품들</h1>
+            <div class="section-header ">
+                <h1>출연 배우</h1>
             </div>
             <div class="section-body">
-                <div class="poster-container">
-                    <div class="img-container">
-                        <a href="/detail/detail.html?id=1022789`;">
-                            <img class="sub-poster" id=""
-                                src="https://image.tmdb.org/t/p/original/pmemGuhr450DK8GiTT44mgwWCP7.jpg">
-                        </a>
-                    </div>
-                    <div class="img-container">
-                        <a href="/detail/detail.html?id=1022789`;">
-                            <img class="sub-poster" id=""
-                                src="https://image.tmdb.org/t/p/w500/f0sj0MXgQtDmlkACfJkFqIB8kpk.jpg">
-                        </a>
-                    </div>
-                    <div class="img-container">
-                        <a href="/detail/detail.html?id=1022789`;">
-                            <img class="sub-poster" id=""
-                                src="https://image.tmdb.org/t/p/w500/4Zb4Z2HjX1t5zr1qYOTdVoisJKp.jpg">
-                        </a>
-                    </div>
-                    <div class="img-container">
-                        <a href="/detail/detail.html?id=1022789`;">
-                            <img class="sub-poster" id=""
-                                src="https://image.tmdb.org/t/p/w500/zaUFDdJidS4Nyyd6jb2Ok3Kq4Vo.jpg">
-                        </a>
-                    </div>
-                    <div class="img-container">
-                        <a href="/detail/detail.html?id=1022789`;">
-                            <img class="sub-poster" id=""
-                                src="https://image.tmdb.org/t/p/w500/lapab2EdLTL6srTus5ktgr64bqF.jpg">
-                        </a>
-                    </div>
+                <div class="actor-main-container">
+                    <!-- actor list -->
                 </div>
             </div>
             <div class="progress">
                 <div class="bar"></div>
             </div>
         </section>
-    </div> -->
+    </div>
+        
+    <script type="text/javascript" src="/js/canvas.js"></script>
     <script type="text/javascript" src="/js/tmdbApi.js"></script>
     <script type="text/javascript" src="/js/common.js"></script>
     <script type="text/javascript" src="/js/detail.js"></script>

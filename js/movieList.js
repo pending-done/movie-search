@@ -1,16 +1,3 @@
-let menu;
-
-
-// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
-function searchAllData(data, searchKey) {
-
-    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
-    return data.filter((value) => {
-        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
-        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
-    })
-}
-
 
 // 데이터 처리
 const processData = (data) => {
@@ -20,13 +7,6 @@ const processData = (data) => {
         createHTML(data);
     });
 }
-// function processData(data) {
-//     clearHTML();
-
-//     data.forEach(data => {
-//         createHTML(data);
-//     });
-// }
 
 // HTML Clear
 function clearHTML() {
@@ -46,7 +26,7 @@ function createHTML(data) {
     const release_date = data.release_date || '2024-01-01'; // 날짜 없는 애들 더미용
     const overview = data.overview;
     const popularity = data.popularity;
-    const vote_average = data.vote_average;
+    const vote_average =  Math.round(data.vote_average * 10) / 10;;
     const vote_count = data.vote_count;
 
     const movieList = document.getElementById('movieList');
@@ -79,20 +59,25 @@ function createHTML(data) {
 
 
     /* * * * * * * * * * * 정보 영역 * * * * * * * * * * * * */
-    // div.movie-card > div.content
     let contentDiv = document.createElement("div");
     contentDiv.classList.add("content");
 
-    // div.movie-card > div.content > h2
     let h2 = document.createElement("h2");
-    h2.textContent = title;
-
-    // div.movie-card > div.content > p
-    let p = document.createElement("p");
-    p.textContent = release_date;
-
+    h2.textContent = title; // title 변수에 설정된 값을 사용
     contentDiv.appendChild(h2);
-    contentDiv.appendChild(p);
+
+    let contentBoxDiv = document.createElement("div");
+    contentBoxDiv.classList.add("content-box");
+
+    let p1 = document.createElement("p");
+    p1.textContent = "24.04.04"; // 날짜 텍스트
+    contentBoxDiv.appendChild(p1);
+
+    let p2 = document.createElement("p");
+    p2.textContent = vote_average; 
+    contentBoxDiv.appendChild(p2);
+
+    contentDiv.appendChild(contentBoxDiv);
     movieCard.appendChild(contentDiv);
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -103,16 +88,21 @@ function createHTML(data) {
 
 // 검색 입력 이벤트
 document.getElementById('inputSearch').addEventListener('input', function (e) {
-    fetchData({countryCode:"ALL"}, this.value, processData);
+    fetchAllMoviesData(this.value, processData);
 });
 
 
+// 메뉴 클릭 이벤트
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    fetchData({countryCode: target.id}, "", processData)
+    if (target.id === "ALL") {
+        fetchAllMoviesData("", processData);
+    } else {
+        fetchMoviesByCountry(target.id, processData)
+    }
+
 }))
 
 
-
 // 페이지 로드 (전체데이터)
-fetchData({countryCode:"ALL"}, "", processData);
+fetchAllMoviesData("", processData);
