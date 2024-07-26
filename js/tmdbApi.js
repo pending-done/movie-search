@@ -52,7 +52,20 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
 }
 
 
-/********************** 메인 페이지 ***********************/
+/********************************* 메인 페이지 **********************************/
+// 전체 국가
+async function fetchAllMoviesData(searchKey, callback){
+    const urlArr = generateUrl("ALL", {countryCode:"ALL", genres:DUMMY_GENRES});
+    const movieList = [];
+
+    for (const url of urlArr) {
+        const data = await fetch(url).then((data) => data.json());
+        movieList.push(...data.results);
+    }
+
+    sortByPopularityDesc(movieList, searchKey, callback);
+}
+
 
 // 나라별
 async function fetchMoviesByCountry(countryCode, callback){
@@ -69,21 +82,29 @@ async function fetchMoviesByCountry(countryCode, callback){
     callback([...data.results]);
 };
 
-// 전체 국가
-async function fetchAllMoviesData(searchKey, callback){
-    const urlArr = generateUrl("ALL", {countryCode:"ALL", genres:DUMMY_GENRES});
-    const movieList = [];
+// 전체 데이터 인기순 정렬
+function sortByPopularityDesc(data, searchKey, callback) {
+    data.sort((a, b) => b.popularity - a.popularity);
 
-    for (const url of urlArr) {
-        const data = await fetch(url).then((data) => data.json());
-        movieList.push(...data.results);
+    if (searchKey !== '') {
+        data = searchAllData(data, searchKey);
     }
+    callback(data);
+}
 
-    sortByPopularityDesc(movieList, searchKey, callback);
+// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
+function searchAllData(data, searchKey) {
+
+    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
+    return data.filter((value) => {
+        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
+        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
+    })
 }
 
 
-/******************** 상세페이지 *********************/
+
+/********************************** 상세페이지 **********************************/
 // 유형별 (인기, 장르, 곧 개봉 등)
 async function fetchTypeMoviesData(searchCriteria, callback){
     let data;
@@ -147,23 +168,3 @@ async function fetchActorsData(movieId, callback) {
     callback(actors);
 }
 
-
-// 데이터 인기순 정렬 (b.popularity - a.popularity)
-function sortByPopularityDesc(data, searchKey, callback) {
-    data.sort((a, b) => b.popularity - a.popularity);
-
-    if (searchKey !== '') {
-        data = searchAllData(data, searchKey);
-    }
-    callback(data);
-}
-
-// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
-function searchAllData(data, searchKey) {
-
-    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
-    return data.filter((value) => {
-        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
-        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
-    })
-}
