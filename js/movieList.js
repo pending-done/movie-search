@@ -1,23 +1,15 @@
-let menu;
+// 페이지 로드 (전체데이터)
+fetchAllMoviesData("", processData);
 
 
 // 데이터 처리
 const processData = (data) => {
     clearHTML();
 
-    console.log(data)
-    debugger;
     data.forEach(data => {
         createHTML(data);
     });
 }
-// function processData(data) {
-//     clearHTML();
-
-//     data.forEach(data => {
-//         createHTML(data);
-//     });
-// }
 
 // HTML Clear
 function clearHTML() {
@@ -98,6 +90,7 @@ document.getElementById('inputSearch').addEventListener('input', function (e) {
 });
 
 
+// 메뉴 클릭 이벤트
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
     if(target.id === "ALL"){
@@ -109,6 +102,3 @@ menuText.forEach((target) => target.addEventListener('click', () => {
 }))
 
 
-
-// 페이지 로드 (전체데이터)
-fetchAllMoviesData("", processData);

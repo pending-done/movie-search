@@ -72,7 +72,6 @@ async function fetchMoviesByCountry(countryCode, callback){
     let url;
 
     if(countryCode === "JP"){
-        // url =  getJapaneseMoviesUrl(countryCode, DUMMY_GENRES);
         url =  generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
     }else{
         url = generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
@@ -135,20 +134,19 @@ async function fetchDetailMovieData(movieId, processMovieData){
 }
 
 
-// 배우, 배우사진
+// 출연진, 배우사진
 async function fetchActorsData(movieId, callback) {
-    const url = getMovieCreditsUrl(movieId);
-
-    const res = await fetch(url).then(data => data.json());
+    const url = generateUrl("credit", {movieId});
+    const credits = await fetch(url).then(data => data.json());
     
     // 배우 정보를 15 index까지 저장
     // 부족할 경우 마지막 index 체크해서
     // 다시 slice
-    let actors = res.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
+    let actors = credits.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
     let sliceIndex = 0;
     let shouldSliceArray = false;
     for (const actor of actors) {
-        const url = getActorImagesUrl(actor.id);
+        const url = generateUrl("actorImg", {actorId:actor.id});
         const data = await fetch(url).then(data => data.json());
 
         // 배우 상세정보가 없을때

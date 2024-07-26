@@ -9,23 +9,17 @@ fetchDetailMovieData(movieId, (data) => {
     processDetailMovieData(data);
 });
 
-// 전체 영화 가져올일 있을때 사용
-const processData = (data) => {
-    searchMovieId(data);
-}
-
-
+// 영화 상세정보
 function processDetailMovieData(data) {
+    // 상세데이터 생성
     console.log("상세데이터")
     console.log(data);
-    // 인기순
+    createDetailElement(data);
+    
+    // 유형별 데이터 검색키
     const topRated = { type: "topRated", genres: data.genres };
     const genres = { type:"genres", countryCode: data.origin_country[0], genres: data.genres };
     const upcoming = {type: "upcoming", genres: data.genres};
-
-    // 상세 데이터 생성
-    createDetailElement(data);
-
     
 
     //  인기 데이터 생성
@@ -37,6 +31,7 @@ function processDetailMovieData(data) {
     fetchTypeMoviesData(upcoming, (data) => {
         processMovieData(data, "밍순!")
     })
+  
     // 장르 데이터
     fetchTypeMoviesData(genres, (data) => {
         processMovieData(data, "비슷한 장르의 작품들")
@@ -44,10 +39,9 @@ function processDetailMovieData(data) {
 
     // 배우 데이터
     fetchActorsData(movieId, processActorsData);
-
-
 }
 
+// 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
 const processMovieData = (data, text) => {
     const subContainer = createSubContainer(text);
 
@@ -60,82 +54,46 @@ const processMovieData = (data, text) => {
     baseContainer.insertAdjacentElement('afterend', subContainer);
 }
 
-
-// 배우
+// 배우 데이터 처리 함수
 const processActorsData = (data) => {
     console.log("배우데이터")
     console.log(data);
     data.forEach(data => createActorContainer(data));
 }
 
-function createActorContainer(data) {
-    // actor-main-container div
-    const parent = document.querySelector('.actor-main-container');
 
-    // actor-container div 
-    const actorContainer = document.createElement('div');
-    actorContainer.className = 'actor-container';
 
-    // a 
-    const link = document.createElement('a');
-    // link.href = `/detail/actor.html?id=${data.actorId}`;
 
-    // img
-    const imgSize = "w300";
-    const img = document.createElement('img');
-    img.className = 'actor-poster';
-    img.id = data.id; 
-    img.src = IMG_URL + imgSize + data.file_path;
 
-    // <a> ----> img 
-    link.appendChild(img);
 
-    // p 
-    const p = document.createElement('p');
-    p.className = 'actor-name';
-    p.id = 'actorName';
-    p.textContent = data.name; 
+/**************************************************************************************************/
+/*********************************                               **********************************/
+/*********************************       HTML 생성 코드뭉치       **********************************/
+/*********************************                               **********************************/
+/**************************************************************************************************/
 
-    // actor-container ---->  <a>, <p> 
-    actorContainer.appendChild(link);
-    actorContainer.appendChild(p);
+// 영화 상세정보
+function createDetailElement(data) {
+    const img = getRandomImg(data);
+    const overview = getOverview(data.overview, 200);
 
-    
-    // actor-main-container ---> actor-contaienr
-    parent.appendChild(actorContainer);
+    // 이미지 속성 변경
+    const backSize = "w1280";
+    const posterSize = "w780"
+    document.getElementById('backPosterImg').src = IMG_URL + backSize + img.back;
+    document.getElementById('moviePosterImg').src = IMG_URL + posterSize + img.poster;
 
-    
-
-    // return actorContainer;
+    // 텍스트 변경
+    document.getElementById('detailGenres02').textContent = data.genres.map((v) => v.name).join(', '); // 장르 배열을 콤마로 구분된 문자열로 설정
+    document.getElementById('detailSummary01').textContent = data.tagline;
+    document.getElementById('detailSummary02').textContent = overview // overview 문자열의 첫 30자만 표시
+    document.getElementById('detailCountry02').textContent = data.origin_country[0];
+    document.getElementById('detailTitle01').textContent = data.title;
+    document.getElementById('detailTitle02').textContent = data.original_title;
+    document.getElementById("detailDate02").textContent = data.release_date;
 }
 
-
-
-
-// 배우 
-const baseContainer = document.querySelector('.actor');
-
-
-
-function createImgContainer(data) {
-    const imgContainer = document.createElement('div');
-    imgContainer.className = 'img-container';
-
-    const link = document.createElement('a');
-    link.href = `/detail/detail.html?id=${data.id}`;
-
-    const imgSize = "w780"
-    const img = document.createElement('img');
-    img.className = 'sub-poster';
-    img.src = IMG_URL + imgSize + data.poster_path;
-    img.alt = 'Movie Poster';
-
-    link.appendChild(img);
-    imgContainer.appendChild(link);
-
-    return imgContainer;
-}
-
+// 유형별 영화 목록들
 function createSubContainer(header) {
     const subContainer = document.createElement('div');
     subContainer.className = 'sub-container';
@@ -172,32 +130,73 @@ function createSubContainer(header) {
     return subContainer;
 }
 
+function createImgContainer(data) {
+    const imgContainer = document.createElement('div');
+    imgContainer.className = 'img-container';
 
-// html 생성
-function createDetailElement(data) {
-    console.log(data);
+    const link = document.createElement('a');
+    link.href = `/detail/detail.html?id=${data.id}`;
 
-    // const randomImg = getRandomImg(data);
+    const imgSize = "w780"
+    const img = document.createElement('img');
+    img.className = 'sub-poster';
+    img.src = IMG_URL + imgSize + data.poster_path;
+    img.alt = 'Movie Poster';
 
-    const img = getRandomImg(data);
-    const overview = getOverview(data.overview, 200);
+    link.appendChild(img);
+    imgContainer.appendChild(link);
 
-
-    // 이미지 속성 변경
-    const backSize = "w1280";
-    const posterSize = "w780"
-    document.getElementById('backPosterImg').src = IMG_URL + backSize + img.back;
-    document.getElementById('moviePosterImg').src = IMG_URL + posterSize + img.poster;
-
-    // 텍스트 변경
-    document.getElementById('detailGenres02').textContent = data.genres.map((v) => v.name).join(', '); // 장르 배열을 콤마로 구분된 문자열로 설정
-    document.getElementById('detailSummary01').textContent = data.tagline;
-    document.getElementById('detailSummary02').textContent = overview // overview 문자열의 첫 30자만 표시
-    document.getElementById('detailCountry02').textContent = data.origin_country[0];
-    document.getElementById('detailTitle01').textContent = data.title;
-    document.getElementById('detailTitle02').textContent = data.original_title;
-    document.getElementById("detailDate02").textContent = data.release_date;
+    return imgContainer;
 }
+
+
+
+// 배우 목록 
+const baseContainer = document.querySelector('.actor');
+function createActorContainer(data) {
+    // actor-main-container div
+    const parent = document.querySelector('.actor-main-container');
+
+    // actor-container div 
+    const actorContainer = document.createElement('div');
+    actorContainer.className = 'actor-container';
+
+    // a 
+    const link = document.createElement('a');
+    // link.href = `/detail/actor.html?id=${data.actorId}`;
+
+    // img
+    const imgSize = "w300";
+    const img = document.createElement('img');
+    img.className = 'actor-poster';
+    img.id = data.id; 
+    img.src = IMG_URL + imgSize + data.file_path;
+
+    // <a> ----> img 
+    link.appendChild(img);
+
+    // p 
+    const p = document.createElement('p');
+    p.className = 'actor-name';
+    p.id = 'actorName';
+    p.textContent = data.name; 
+
+    // actor-container ---->  <a>, <p> 
+    actorContainer.appendChild(link);
+    actorContainer.appendChild(p);
+    
+    // actor-main-container ---> actor-contaienr
+    parent.appendChild(actorContainer);
+}
+
+
+
+/**************************************************************************************************/
+/*********************************                               **********************************/
+/*********************************      그 외 잡다구리 함수       **********************************/
+/*********************************                               **********************************/
+/**************************************************************************************************/
+
 
 // 배경이미지, 포스터이미지 랜덤
 function getRandomImg(data) {
@@ -212,7 +211,6 @@ function getRandomImg(data) {
     if (data.belongs_to_collection.poster_path !== null) {
         if (randomNumber < 0.25) {
             img.back = data.belongs_to_collection.backdrop_path;
-            // img.poster = data.belongs_to_collection.poster_path;
         }
     } else {
         if (randomNumber < 0.25) {
@@ -231,15 +229,13 @@ function getOverview(overview, maxLength) {
 }
 
 
-
-// 페이지 로딩 애니메이션?
+// 페이지 로딩 애니메이션
 (function () {
     setTimeout(() => {
         document.getElementById('loadingOverlay').style.opacity = 0;
         document.getElementsByClassName('main-container')[0].style.display = 'block';
     }, 700)
 })()
-
 
 
 // 동적으로 생성된 요소에 스크롤이벤트
@@ -273,26 +269,4 @@ document.addEventListener('wheel', function (event) {
         progressBar.style.width = `${scrolledPercentage}%`;
     }
 }, { passive: false });
-
-
-// const posterContainer = document.querySelector('.poster-container');
-// const bar = document.querySelector('.bar');
-
-// const imgContainerWidth = document.querySelector('.poster-container .img-container').offsetWidth;
-// const imgContainerCount = document.querySelectorAll('.poster-container .img-container').length;
-// const posterContaienrWidth = imgContainerWidth * imgContainerCount;
-
-// posterContainer.addEventListener('wheel', (event) => {
-//     event.preventDefault(); // 기본 스크롤 이벤트 막기
-
-//     const scrollAmount = event.deltaY; // deltaY 값에 따라 스크롤 양 결정
-//     posterContainer.scrollLeft += scrollAmount; // 스크롤 이동
-
-
-//     const scrollLeftPosition = posterContainer.scrollLeft;
-//     const scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
-
-//     bar.style.width = `${scrolledPercentage}%`;
-// });
-
 
