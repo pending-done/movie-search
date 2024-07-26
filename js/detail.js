@@ -2,6 +2,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id'); // 'id'에 해당하는 Query Parameter 값 가져오기
 // const IMG_URL = "https://image.tmdb.org/t/p/original";
 const IMG_URL = "https://image.tmdb.org/t/p/";
+const ORIGIN_COUNTRY_CODE = {   
+    'US': '미국',
+    'JP': '일본',
+    'KR': '한국',
+    'UK': '영국'
+}
+
 console.log(`movie ID ${movieId}`);
 
 // 페이지 기본 로드
@@ -14,6 +21,7 @@ function processDetailMovieData(data) {
     // 상세데이터 생성
     console.log("상세데이터")
     console.log(data);
+
     createDetailElement(data);
     
     // 유형별 데이터 검색키
@@ -42,6 +50,7 @@ function processDetailMovieData(data) {
 }
 
 // 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
+// 화살표함수인데 왜 호이스팅이 되는가에 대해서
 const processMovieData = (data, text) => {
     const subContainer = createSubContainer(text);
 
@@ -76,6 +85,15 @@ const processActorsData = (data) => {
 function createDetailElement(data) {
     const img = getRandomImg(data);
     const overview = getOverview(data.overview, 200);
+    
+    const country = ORIGIN_COUNTRY_CODE[data.origin_country];
+    let title2 = "";
+    if (data.original_title === data.title) {
+        title2 = data.tagline ?? "";
+    } else {
+        title2 = data.original_title;
+    }
+    
 
     // 이미지 속성 변경
     const backSize = "w1280";
@@ -87,9 +105,9 @@ function createDetailElement(data) {
     document.getElementById('detailGenres02').textContent = data.genres.map((v) => v.name).join(', '); // 장르 배열을 콤마로 구분된 문자열로 설정
     document.getElementById('detailSummary01').textContent = data.tagline;
     document.getElementById('detailSummary02').textContent = overview // overview 문자열의 첫 30자만 표시
-    document.getElementById('detailCountry02').textContent = data.origin_country[0];
+    document.getElementById('detailCountry02').textContent = data.origin_country;
     document.getElementById('detailTitle01').textContent = data.title;
-    document.getElementById('detailTitle02').textContent = data.original_title;
+    document.getElementById('detailTitle02').textContent = title2;
     document.getElementById("detailDate02").textContent = data.release_date;
 }
 
@@ -229,16 +247,61 @@ function getOverview(overview, maxLength) {
 }
 
 
-// 페이지 로딩 애니메이션
-(function () {
-    setTimeout(() => {
-        document.getElementById('loadingOverlay').style.opacity = 0;
-        document.getElementsByClassName('main-container')[0].style.display = 'block';
-    }, 700)
-})()
+/**************************************************************************************************/
+/*********************************                               **********************************/
+/*********************************      그 외외 이벤트처리        **********************************/
+/*********************************                               **********************************/
+/**************************************************************************************************/
+
+function getProgressBar(targetElement, className, colorCode){
+    const element = targetElement.closest(className);
+    if(element){
+        const nextElement = element.nextElementSibling;
+        if(nextElement){
+            bar = nextElement.querySelector('.bar');
+            if(bar){
+                bar.style.backgroundColor = colorCode;
+            }
+        }
+    }
+    
+}
+
+// 동적으로 생성된 이벤트(이벤트 위임)
+// closet()에 매개변수로 선택자를 넣어주면
+// 호출한 요소 자신을 포함하여, 해당 요소의 조상 요소들 중에서 가장 가까운 요소(선택자)를 찾음
+// 없으면 null, 본인이 해당하면 본인 반환
+// 결론: .bar의 형제 요소를 closet()으로 찾고 nextElementSibling로 형제요소(.bar)에 대한 DOM을 가져오는 것
+// closet()이 쓰인 이유: bar 찾으려고 (bar는 작으니까.. 거기에 hover를 줄 순 없으니까.. ,
+//  그리고 동적 생성 요소라 document(전체요소?)에게 mousever 이벤트를 주고 내가 원하는 요소인 조건에만 
+// 실행되게하려면 대충 이렇게 해야된다더라
+document.addEventListener('mouseover', function (event) {
+    const targetElement = event.target;
+
+    if (targetElement.closest('.poster-container')) {
+        event.preventDefault();
+        getProgressBar(targetElement, '.poster-container', '#ff0000');
+
+    } else if (targetElement.closest('.section-body')) {
+        getProgressBar(targetElement, '.section-body', '#ff0000');
+    }
+}, { passive: false });
 
 
-// 동적으로 생성된 요소에 스크롤이벤트
+document.addEventListener('mouseout', function (event) {
+    const targetElement = event.target;
+
+    if (targetElement.closest('.poster-container')) {
+        event.preventDefault();
+        
+        getProgressBar(targetElement, '.poster-container', '#efb33b');
+    } else if (targetElement.closest('.section-body')) {
+        getProgressBar(targetElement, '.section-body', '#efb33b');
+    }
+},{ passive: false });
+
+
+
 document.addEventListener('wheel', function (event) {
     const targetElement = event.target;
 
@@ -254,6 +317,7 @@ document.addEventListener('wheel', function (event) {
         const scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
         const progressBar = posterContainer.nextElementSibling.querySelector('.bar');
         progressBar.style.width = `${scrolledPercentage}%`;
+        progressBar.style.backgroundColor = '#ff0000';
     }else if(targetElement.closest('.actor-main-container')){
         event.preventDefault();
 
@@ -270,3 +334,10 @@ document.addEventListener('wheel', function (event) {
     }
 }, { passive: false });
 
+// 페이지 로딩 애니메이션
+(function () {
+    setTimeout(() => {
+        document.getElementById('loadingOverlay').style.opacity = 0;
+        document.getElementsByClassName('main-container')[0].style.display = 'block';
+    }, 700)
+})()

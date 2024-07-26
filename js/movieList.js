@@ -1,6 +1,3 @@
-// 페이지 로드 (전체데이터)
-fetchAllMoviesData("", processData);
-
 
 // 데이터 처리
 const processData = (data) => {
@@ -29,7 +26,7 @@ function createHTML(data) {
     const release_date = data.release_date || '2024-01-01'; // 날짜 없는 애들 더미용
     const overview = data.overview;
     const popularity = data.popularity;
-    const vote_average = data.vote_average;
+    const vote_average =  Math.round(data.vote_average * 10) / 10;;
     const vote_count = data.vote_count;
 
     const movieList = document.getElementById('movieList');
@@ -62,20 +59,33 @@ function createHTML(data) {
 
 
     /* * * * * * * * * * * 정보 영역 * * * * * * * * * * * * */
-    // div.movie-card > div.content
+    // contentDiv 요소 생성
     let contentDiv = document.createElement("div");
     contentDiv.classList.add("content");
 
-    // div.movie-card > div.content > h2
+    // h2 요소 생성 및 추가
     let h2 = document.createElement("h2");
-    h2.textContent = title;
-
-    // div.movie-card > div.content > p
-    let p = document.createElement("p");
-    p.textContent = release_date;
-
+    h2.textContent = title; // title 변수에 설정된 값을 사용
     contentDiv.appendChild(h2);
-    contentDiv.appendChild(p);
+
+    // content-box div 요소 생성
+    let contentBoxDiv = document.createElement("div");
+    contentBoxDiv.classList.add("content-box");
+
+    // 첫 번째 p 요소 생성 및 추가 (날짜)
+    let p1 = document.createElement("p");
+    p1.textContent = "24.04.04"; // 날짜 텍스트
+    contentBoxDiv.appendChild(p1);
+
+    // 두 번째 p 요소 생성 및 추가 (평점)
+    let p2 = document.createElement("p");
+    p2.textContent = vote_average; 
+    contentBoxDiv.appendChild(p2);
+
+    // content-box div를 contentDiv에 추가
+    contentDiv.appendChild(contentBoxDiv);
+
+    // movieCard에 contentDiv 추가
     movieCard.appendChild(contentDiv);
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -93,12 +103,14 @@ document.getElementById('inputSearch').addEventListener('input', function (e) {
 // 메뉴 클릭 이벤트
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    if(target.id === "ALL"){
+    if (target.id === "ALL") {
         fetchAllMoviesData("", processData);
-    }else{
+    } else {
         fetchMoviesByCountry(target.id, processData)
     }
-    
+
 }))
 
 
+// 페이지 로드 (전체데이터)
+fetchAllMoviesData("", processData);

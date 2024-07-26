@@ -8,6 +8,13 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
 .header {
     width: 100%;
     height: 80px;
@@ -19,20 +26,42 @@
     /* z-index: 1;
     opacity : 0.5; */
 }
+*{
+    letter-spacing: -1px;
+}
 
 h1{
     font-family: 'SBAggroB', cursive;
+    font-size: 2.4rem;
     color:#efb33b;
+    height: 18px;
 }
-
 h3{
     font-family: 'SBAggroB', cursive;
+    font-size: 1.2em;
 }
 
 p{
-    font-family: 'SBAggroB', cursive;
+    font-family: 'Pretendard-Regular';
     color: white;
 }
+
+.title-container{
+    margin-bottom: 50px;
+}
+
+.info-box{
+    margin-bottom: 60px;
+}
+.info-title{
+    height: 10px;
+}
+
+
+
+/* .detail-summary-02{
+    font-family: 'Pretendard-Regular';
+} */
 .logo-box {
     margin: 0px 0px 0px 30px;
     width: 40%;
@@ -194,11 +223,6 @@ p{
 }
 
 
-/* 마우스 호버 시 스크롤바 색상 */
-.scrollbar-thumb:hover {
-}
-
-
 .actor-main-container {
     display: flex;
 
@@ -219,7 +243,7 @@ p{
 
 .actor-poster{
     width: 200px;
-    height: 360px;
+    height: 320px;
     object-fit: cover;
 
 }
@@ -239,11 +263,10 @@ p{
     height: 5px;
     transition: width 1.2s ease;
     background-color: #efb33b;
+
+    transition: background-color 0.6s ease-in-out;
 }
 
-.progress .bar:hover{
-    background-color: red;
-}
 
 
 

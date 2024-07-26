@@ -99,7 +99,16 @@
     margin-left: 10px;
 }
 
-.content > p{
-    font-size: 11px;
+.content-box{
+    display: flex;
+    justify-content: space-between;
+}
+
+.content-box > p:nth-child(1){
+    font-size: 0.9rem;
     margin-left: 10px;
+}
+.content-box > p:nth-child(2){
+    font-size: 0.9rem;
+    margin-right: 10px;
 }
