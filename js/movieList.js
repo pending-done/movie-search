@@ -1,21 +1,12 @@
 let menu;
 
 
-// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
-function searchAllData(data, searchKey) {
-
-    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
-    return data.filter((value) => {
-        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
-        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
-    })
-}
-
-
 // 데이터 처리
 const processData = (data) => {
     clearHTML();
 
+    console.log(data)
+    debugger;
     data.forEach(data => {
         createHTML(data);
     });
@@ -103,16 +94,21 @@ function createHTML(data) {
 
 // 검색 입력 이벤트
 document.getElementById('inputSearch').addEventListener('input', function (e) {
-    fetchData({countryCode:"ALL"}, this.value, processData);
+    fetchAllMoviesData(this.value, processData);
 });
 
 
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    fetchData({countryCode: target.id}, "", processData)
+    if(target.id === "ALL"){
+        fetchAllMoviesData("", processData);
+    }else{
+        fetchMoviesByCountry(target.id, processData)
+    }
+    
 }))
 
 
 
 // 페이지 로드 (전체데이터)
-fetchData({countryCode:"ALL"}, "", processData);
+fetchAllMoviesData("", processData);

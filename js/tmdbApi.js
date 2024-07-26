@@ -1,5 +1,3 @@
-
-
 // API 선언
 const options = {
     method: 'GET',
@@ -15,126 +13,90 @@ const LANGUAGE = 'ko-KR';
 const WITHOUT_GENRES = '10749';
 const COUNTRY_CODES = ['KR', 'US', 'JP']
 const DUMMY_GENRES = [
-    { id: null },
-    { id: null },
+    { id: '' },
+    { id: '' },
 ]
 
-// 최고 평점 영화
-const TOP_RATED_MOVIES_URL = `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}`;
-// 곧 개봉 예정 영화
-const UPCOMING_MOVIES_URL = `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}`;
+
+function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null } = {}){
+    switch (type) {
+        case 'topRated':
+            return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}`;
+        case 'upcoming':
+            return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}`;
+        case 'genres':
+            if(!genres || !countryCode) throw new Error('무슨 장르 보고싶은데?');
+            return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
+        case 'detail':
+            if (!movieId) throw new Error('Movie ID가 없다네');
+            return `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${LANGUAGE}`;
+        case 'byCountries':
+            if (!countryCode || !genres) throw new Error('나라별 영화는 countryCode랑 genres가 필수이거늘');
+            if (countryCode === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
+            if (countryCode !== "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`
+        case 'credit':
+            if (!movieId) throw new Error('출연진을 보려면 movie ID를 넣어야지');
+            return `${BASE_URL}/movie/${movieId}/credits?language=${LANGUAGE}&api_key=${API_KEY}`;
+        case 'actorImg':
+            if (!actorId) throw new Error('배우사진을 보려면 actor ID를 넣어야지');
+            return `${BASE_URL}/person/${actorId}/images?api_key=${API_KEY}`;
+        case 'ALL':
+            if (!countryCode) throw new Error('전체영화 목록을 보려면 countryCode를 잊지마');
+            return COUNTRY_CODES.map((code) => {
+                if (code === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
+                return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
+            });
+        default:
+            throw new Error('url 어딘가 에러');
+    }
+}
 
 
+/********************** 메인 페이지 ***********************/
 
-// 영화 ID로 조회하는 주소
-const getMovieDetailsUrl = (movieId) => `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${LANGUAGE}`;
+// 나라별
+async function fetchMoviesByCountry(countryCode, callback){
+    let url;
 
-// 일본 영화 정보 (기본 장르 및 국가 코드)
-const getJapaneseMoviesUrl = (countryCode, genres) => `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=16`;
+    if(countryCode === "JP"){
+        // url =  getJapaneseMoviesUrl(countryCode, DUMMY_GENRES);
+        url =  generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
+    }else{
+        url = generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
+    }
 
-// 다른 나라별 영화 정보 (기본 장르 및 국가 코드)
-const getOtherCountryMoviesUrl = (countryCode, genres) => `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&${genres[0].id}`;
-
-// 출연진
-const getMovieCreditsUrl = (movieId) => `${BASE_URL}/movie/${movieId}/credits?language=${LANGUAGE}&api_key=${API_KEY}`;
-
-// 배우 사진
-const getActorImagesUrl = (actorId) => `${BASE_URL}/person/${actorId}/images?api_key=${API_KEY}`;
-
-// 전체 국가 COUNTRY_CODES에 있는 국가 url 배열로 반환 
-const getAllCountryMovies = (countryCode) => {
-    return COUNTRY_CODES.map((code) => {
-        if (code === "JP") return getJapaneseMoviesUrl(code, "16");
-        if (code !== "JP") return getOtherCountryMoviesUrl(code, DUMMY_GENRES);
-    })
+    const data = await fetch(url).then((data) => data.json());
+    callback([...data.results]);
 };
 
+// 전체 국가
+async function fetchAllMoviesData(searchKey, callback){
+    const urlArr = generateUrl("ALL", {countryCode:"ALL", genres:DUMMY_GENRES});
+    const movieList = [];
 
-function getUrl(searchCriteria) {
-
-    // 영화 id값으로 조회
-    if (searchCriteria.id != null) {
-        const movieId = searchCriteria.id;
-
-        return getMovieDetailsUrl(movieId);
+    for (const url of urlArr) {
+        const data = await fetch(url).then((data) => data.json());
+        movieList.push(...data.results);
     }
 
-    // 메뉴별 조회 (전체, 한국, 일본, 미국)
-    if (searchCriteria.countryCode === "ALL") {
-
-        return COUNTRY_CODES.map((countryCode) => getAllCountryMovies());
-
-    } else if (searchCriteria.countryCode !== "ALL") {
-
-        const countryCode = searchCriteria.countryCode;
-
-        // 일본이면 애니메이션 장르
-        if (countryCode === "JP") {
-            return getJapaneseMoviesUrl(countryCode, DUMMY_GENRES);
-        } else {
-            return getOtherCountryMoviesUrl(countryCode, DUMMY_GENRES);
-        }
-    }
+    sortByPopularityDesc(movieList, searchKey, callback);
 }
 
 
-// API 데이터 가져오기 (KR, US, JP)
-async function fetchData(searchCriteria, searchKey, processData) { // searchKey = 내가 입력한 문자
-    try {
-        const movieList = [];
-        if (searchCriteria === null) alert("데이터 불러올떄 에러났음");
-
-        console.log(searchCriteria.countryCode);
-
-        if (searchCriteria.countryCode === "ALL") {
-            const urlArr = getAllCountryMovies(searchCriteria.countryCode);
-
-            for (const url of urlArr) {
-                const data = await fetch(url).then((data) => data.json());
-                movieList.push(...data.results);
-            }
-        } else {
-            // const data = await fetch(getUrl(searchCriteria)).then((data) => data.json());
-            const data = await fetch(getUrl(searchCriteria)).then((data) => data.json());
-
-            if (data.results == null) {
-                processData(data);  // 상세 정보 (단일)
-                return;
-            }
-            movieList.push(...data.results);
-        }
-
-        sortByPopularityDesc(movieList, searchKey, processData);
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-
-// 영화 상세정보 (movieID)
-function generateActorUrl(searchCriteria, movieId) {
-    // 크레딧 (출연진, 감독)
-    if (searchCriteria.credits != null) {
-        return `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-kr&api_key=${API_KEY}`
-    }
-
-    // 배우 사진
-    if (searchCriteria.actorId != null) {
-        return `https://api.themoviedb.org/3/person/${searchCriteria.actorId}/images?api_key=${API_KEY}`
-    }
-}
-
+/******************** 상세페이지 *********************/
 // 유형별 (인기, 장르, 곧 개봉 등)
 async function fetchTypeMoviesData(searchCriteria, callback){
     let data;
     if(searchCriteria.type === "topRated"){
-        const url = TOP_RATED_MOVIES_URL;
+        const url = generateUrl("topRated");
         data = await fetch(url).then((data) => data.json());
     }else if(searchCriteria.type === "genres"){
-        const url = getOtherCountryMoviesUrl(searchCriteria.countryCode, searchCriteria.genres);
+        const countryCode = searchCriteria.countryCode;
+        const genres = searchCriteria.genres;
+        const url = generateUrl("genres",{countryCode, genres} )
         data = await fetch(url).then((data) => data.json());
     }else if(searchCriteria.type === "upcoming"){
-        const url = UPCOMING_MOVIES_URL;
+        const url = generateUrl("upcoming");
         data =  await fetch(url).then((data) => data.json());
     }
 
@@ -142,27 +104,30 @@ async function fetchTypeMoviesData(searchCriteria, callback){
 }
 
 
-
+// 영화 상세정보(단일데이터)
 async function fetchDetailMovieData(movieId, processMovieData){
-     const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
+    //  const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
+     const url = generateUrl("detail", {movieId});
      const data = await fetch(url).then(data => data.json());
 
      processMovieData(data);
 }
 
 
-
-// 상세페이지 ((배우, 배우사진))
-async function fetchActors(searchCriteria, movieId, processData) {
-    const url = generateActorUrl(searchCriteria, movieId);
+// 배우, 배우사진
+async function fetchActorsData(movieId, callback) {
+    const url = getMovieCreditsUrl(movieId);
 
     const res = await fetch(url).then(data => data.json());
+    
+    // 배우 정보를 15 index까지 저장
+    // 부족할 경우 마지막 index 체크해서
+    // 다시 slice
     let actors = res.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
-
     let sliceIndex = 0;
     let shouldSliceArray = false;
     for (const actor of actors) {
-        const url = generateActorUrl({ actorId: actor.id });
+        const url = getActorImagesUrl(actor.id);
         const data = await fetch(url).then(data => data.json());
 
         // 배우 상세정보가 없을때
@@ -179,19 +144,26 @@ async function fetchActors(searchCriteria, movieId, processData) {
         actors = actors.slice(0, sliceIndex);
     }
 
-
-    processData(actors);
+    callback(actors);
 }
 
 
 // 데이터 인기순 정렬 (b.popularity - a.popularity)
-function sortByPopularityDesc(data, searchKey, processData) {
+function sortByPopularityDesc(data, searchKey, callback) {
     data.sort((a, b) => b.popularity - a.popularity);
 
     if (searchKey !== '') {
         data = searchAllData(data, searchKey);
-
-        console.log(data);
     }
-    processData(data);
+    callback(data);
+}
+
+// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
+function searchAllData(data, searchKey) {
+
+    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
+    return data.filter((value) => {
+        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
+        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
+    })
 }

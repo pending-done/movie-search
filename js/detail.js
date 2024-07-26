@@ -2,11 +2,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id'); // 'id'에 해당하는 Query Parameter 값 가져오기
 // const IMG_URL = "https://image.tmdb.org/t/p/original";
 const IMG_URL = "https://image.tmdb.org/t/p/";
-console.log(`Loading details for movie ID ${movieId}`);
+console.log(`movie ID ${movieId}`);
 
 // 페이지 기본 로드
-// fetchData({ id: movieId }, "", processDetailData);
-
 fetchDetailMovieData(movieId, (data) => {
     processDetailMovieData(data);
 });
@@ -16,27 +14,26 @@ const processData = (data) => {
     searchMovieId(data);
 }
 
-// 영화 id로 필터링 (쓸일없을듯)
-function searchMovieId(data) {
-}
-
 
 function processDetailMovieData(data) {
+    console.log("상세데이터")
     console.log(data);
-
-    // 상세 데이터 생성
-    createDetailElement(data);
-
     // 인기순
     const topRated = { type: "topRated", genres: data.genres };
     const genres = { type:"genres", countryCode: data.origin_country[0], genres: data.genres };
     const upcoming = {type: "upcoming", genres: data.genres};
+
+    // 상세 데이터 생성
+    createDetailElement(data);
+
+    
 
     //  인기 데이터 생성
     fetchTypeMoviesData(topRated, (data) => {
         processMovieData(data, "최고의 작품들")
     })
 
+    // 곧 개봉 데이터 
     fetchTypeMoviesData(upcoming, (data) => {
         processMovieData(data, "밍순!")
     })
@@ -45,8 +42,8 @@ function processDetailMovieData(data) {
         processMovieData(data, "비슷한 장르의 작품들")
     })
 
-    // 출연진 데이터
-    fetchActors({ credits: " " }, movieId, processActorData);
+    // 배우 데이터
+    fetchActorsData(movieId, processActorsData);
 
 
 }
@@ -64,13 +61,10 @@ const processMovieData = (data, text) => {
 }
 
 
-
-
-
-const processActorData = (data) => {
-
+// 배우
+const processActorsData = (data) => {
+    console.log("배우데이터")
     console.log(data);
-
     data.forEach(data => createActorContainer(data));
 }
 
