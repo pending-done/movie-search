@@ -155,7 +155,7 @@ function createImgContainer(data) {
     imgContainer.className = 'img-container';
 
     const link = document.createElement('a');
-    link.href = `/detail/detail.html?id=${data.id}`;
+    link.href = `../detail/detail.html?id=${data.id}`;
 
     const imgSize = "w780"
     const img = document.createElement('img');
