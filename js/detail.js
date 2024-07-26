@@ -105,7 +105,7 @@ function createDetailElement(data) {
     document.getElementById('detailGenres02').textContent = data.genres.map((v) => v.name).join(', '); // 장르 배열을 콤마로 구분된 문자열로 설정
     document.getElementById('detailSummary01').textContent = data.tagline;
     document.getElementById('detailSummary02').textContent = overview // overview 문자열의 첫 30자만 표시
-    document.getElementById('detailCountry02').textContent = data.origin_country;
+    document.getElementById('detailCountry02').textContent = country;
     document.getElementById('detailTitle01').textContent = data.title;
     document.getElementById('detailTitle02').textContent = title2;
     document.getElementById("detailDate02").textContent = data.release_date;

@@ -59,33 +59,25 @@ function createHTML(data) {
 
 
     /* * * * * * * * * * * 정보 영역 * * * * * * * * * * * * */
-    // contentDiv 요소 생성
     let contentDiv = document.createElement("div");
     contentDiv.classList.add("content");
 
-    // h2 요소 생성 및 추가
     let h2 = document.createElement("h2");
     h2.textContent = title; // title 변수에 설정된 값을 사용
     contentDiv.appendChild(h2);
 
-    // content-box div 요소 생성
     let contentBoxDiv = document.createElement("div");
     contentBoxDiv.classList.add("content-box");
 
-    // 첫 번째 p 요소 생성 및 추가 (날짜)
     let p1 = document.createElement("p");
     p1.textContent = "24.04.04"; // 날짜 텍스트
     contentBoxDiv.appendChild(p1);
 
-    // 두 번째 p 요소 생성 및 추가 (평점)
     let p2 = document.createElement("p");
     p2.textContent = vote_average; 
     contentBoxDiv.appendChild(p2);
 
-    // content-box div를 contentDiv에 추가
     contentDiv.appendChild(contentBoxDiv);
-
-    // movieCard에 contentDiv 추가
     movieCard.appendChild(contentDiv);
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

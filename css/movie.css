@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap');
 
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SBAggroB';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 .movie-container{
     margin: 100px auto 0px auto;
     margin-left: auto;
@@ -95,8 +108,15 @@
 }
 
 .content > h2{
-    font-size: 14px;
+    font-size: 1.0rem;
     margin-left: 10px;
+    margin-right: 10px;
+    height: 50px;
+    font-family: 'SBAggroB', cursive;
+}
+
+.movie-card:hover .content > h2{
+    color: #efb33b;
 }
 
 .content-box{
@@ -105,10 +125,16 @@
 }
 
 .content-box > p:nth-child(1){
+    font-family: 'Pretendard-Regular';
+    color: white;
     font-size: 0.9rem;
     margin-left: 10px;
 }
 .content-box > p:nth-child(2){
+    font-family: 'Pretendard-Regular';
+    color: white;
     font-size: 0.9rem;
     margin-right: 10px;
 }
+
+
