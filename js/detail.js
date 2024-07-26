@@ -5,7 +5,11 @@ const IMG_URL = "https://image.tmdb.org/t/p/";
 console.log(`Loading details for movie ID ${movieId}`);
 
 // 페이지 기본 로드
-fetchData({ id: movieId }, "", processDetailData);
+// fetchData({ id: movieId }, "", processDetailData);
+
+fetchDetailMovieData(movieId, (data) => {
+    processDetailMovieData(data);
+});
 
 // 전체 영화 가져올일 있을때 사용
 const processData = (data) => {
@@ -17,7 +21,7 @@ function searchMovieId(data) {
 }
 
 
-function processDetailData(data) {
+function processDetailMovieData(data) {
     console.log(data);
 
     // 상세 데이터 생성
@@ -25,24 +29,20 @@ function processDetailData(data) {
 
     // 인기순
     const topRated = { type: "topRated", genres: data.genres };
-    const genres = { countryCode: data.origin_country[0], genres: data.genres };
+    const genres = { type:"genres", countryCode: data.origin_country[0], genres: data.genres };
     const upcoming = {type: "upcoming", genres: data.genres};
 
     //  인기 데이터 생성
-    // fetchData(topRated, "", processPopularityData);
-    fetchData(topRated, "", (data) => {
+    fetchTypeMoviesData(topRated, (data) => {
         processMovieData(data, "최고의 작품들")
     })
 
-    // 장르 데이터 생성
-    // fetchData(genres, "", processGenresData);
-    fetchData(genres, "", (data) => {
-        processMovieData(data, "비슷한 장르")
+    fetchTypeMoviesData(upcoming, (data) => {
+        processMovieData(data, "밍순!")
     })
-    //  곧 개봉 생성
-    // fetchData(upcoming, "", processUpcomingData);
-    fetchData(upcoming, "", (data) => {
-        processMovieData(data, "곧!")
+    // 장르 데이터
+    fetchTypeMoviesData(genres, (data) => {
+        processMovieData(data, "비슷한 장르의 작품들")
     })
 
     // 출연진 데이터

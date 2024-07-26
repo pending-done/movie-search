@@ -33,7 +33,7 @@ const getMovieDetailsUrl = (movieId) => `${BASE_URL}/movie/${movieId}?api_key=${
 const getJapaneseMoviesUrl = (countryCode, genres) => `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=16`;
 
 // 다른 나라별 영화 정보 (기본 장르 및 국가 코드)
-const getOtherCountryMoviesUrl = (countryCode, genres) => `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&${genres[1].id ?? ""}`;
+const getOtherCountryMoviesUrl = (countryCode, genres) => `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&${genres[0].id}`;
 
 // 출연진
 const getMovieCreditsUrl = (movieId) => `${BASE_URL}/movie/${movieId}/credits?language=${LANGUAGE}&api_key=${API_KEY}`;
@@ -57,17 +57,6 @@ function getUrl(searchCriteria) {
         const movieId = searchCriteria.id;
 
         return getMovieDetailsUrl(movieId);
-    }
-
-    // 카테고리 조회 (인기, 개봉예정 ...)
-    if (searchCriteria.type != null) {
-        const type = searchCriteria.type;
-
-        if (type == "topRated") {
-            return TOP_RATED_MOVIES_URL;
-        } else if (type == "upcoming") {
-            return UPCOMING_MOVIES_URL
-        }
     }
 
     // 메뉴별 조회 (전체, 한국, 일본, 미국)
@@ -124,17 +113,6 @@ async function fetchData(searchCriteria, searchKey, processData) { // searchKey 
 
 // 영화 상세정보 (movieID)
 function generateActorUrl(searchCriteria, movieId) {
-    /**
-     * searchCriterial
-     * credits: 출연진(감독)  Acting(Directing)   //'https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR'
-     * images: 배우 사진 // https://api.themoviedb.org/3/person/${castId}/images
-     * 
-     * images: 스틸이미지?              
-     * 
-     * 배우 누르면 관련 영화 페이지 ?
-     *  
-     */
-
     // 크레딧 (출연진, 감독)
     if (searchCriteria.credits != null) {
         return `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-kr&api_key=${API_KEY}`
@@ -144,15 +122,35 @@ function generateActorUrl(searchCriteria, movieId) {
     if (searchCriteria.actorId != null) {
         return `https://api.themoviedb.org/3/person/${searchCriteria.actorId}/images?api_key=${API_KEY}`
     }
-
 }
 
-async function fetchDetail(movieId) {
-    const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`
-    const data = await fetch(url).then(data => data.json());
+// 유형별 (인기, 장르, 곧 개봉 등)
+async function fetchTypeMoviesData(searchCriteria, callback){
+    let data;
+    if(searchCriteria.type === "topRated"){
+        const url = TOP_RATED_MOVIES_URL;
+        data = await fetch(url).then((data) => data.json());
+    }else if(searchCriteria.type === "genres"){
+        const url = getOtherCountryMoviesUrl(searchCriteria.countryCode, searchCriteria.genres);
+        data = await fetch(url).then((data) => data.json());
+    }else if(searchCriteria.type === "upcoming"){
+        const url = UPCOMING_MOVIES_URL;
+        data =  await fetch(url).then((data) => data.json());
+    }
 
-    processDetailData(data);
+    callback([...data.results]);
 }
+
+
+
+async function fetchDetailMovieData(movieId, processMovieData){
+     const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
+     const data = await fetch(url).then(data => data.json());
+
+     processMovieData(data);
+}
+
+
 
 // 상세페이지 ((배우, 배우사진))
 async function fetchActors(searchCriteria, movieId, processData) {
