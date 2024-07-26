@@ -159,20 +159,25 @@ async function fetchActors(searchCriteria, movieId, processData){
     const res = await fetch(url).then(data => data.json());
     let actors =  res.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
 
+    let sliceIndex = 0;
+    let shouldSliceArray = false;
     for(const actor of actors){
         const url = generateActorUrl({actorId:actor.id});
         const data = await fetch(url).then(data => data.json());
+
+        // 배우 상세정보가 없을때
+        if(!Array.isArray(data.profiles) || data.profiles.length === 0){
+            shouldSliceArray = true;
+            break;
+        }
+
         actor.file_path = data.profiles[0].file_path;
-
+        sliceIndex++;
     }
-    // actors.forEach(async (cur) => {
-    //     const url = generateActorUrl({actorId:cur.id});
-    //     const data = await fetch(url).then(data => data.json());
 
-    //     cur.file_path = data.profiles[0].file_path;
-    // });
-
-    debugger;
+    if(shouldSliceArray){
+        actors = actors.slice(0, sliceIndex);
+    }
 
 
     processData(actors);

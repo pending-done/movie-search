@@ -1,6 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id'); // 'id'에 해당하는 Query Parameter 값 가져오기
-const IMG_URL = "https://image.tmdb.org/t/p/original";
+// const IMG_URL = "https://image.tmdb.org/t/p/original";
+const IMG_URL = "https://image.tmdb.org/t/p/";
 console.log(`Loading details for movie ID ${movieId}`);
 
 // 페이지 기본 로드
@@ -22,25 +23,53 @@ function processDetailData(data) {
     // 상세 데이터 생성
     createDetailElement(data);
 
-    // 장르 데이터 생성
-    fetchData({ countryCode: data.origin_country[0], genres: data.genres }, "", processGenresData);
-    //  곧 개봉 생성
-    // fetchData({ type: "upcoming", genres: data.genres }, "", processUpcomingData);
+    // 인기순
+    const topRated = { type: "topRated", genres: data.genres };
+    const genres = { countryCode: data.origin_country[0], genres: data.genres };
+    const upcoming = {type: "upcoming", genres: data.genres};
 
     //  인기 데이터 생성
-    // fetchData({ type: "topRated", genres: data.genres }, "", processPopularityData);
+    // fetchData(topRated, "", processPopularityData);
+    fetchData(topRated, "", (data) => {
+        processMovieData(data, "최고의 작품들")
+    })
+
+    // 장르 데이터 생성
+    // fetchData(genres, "", processGenresData);
+    fetchData(genres, "", (data) => {
+        processMovieData(data, "비슷한 장르")
+    })
+    //  곧 개봉 생성
+    // fetchData(upcoming, "", processUpcomingData);
+    fetchData(upcoming, "", (data) => {
+        processMovieData(data, "곧!")
+    })
 
     // 출연진 데이터
     fetchActors({ credits: " " }, movieId, processActorData);
 
 
+}
 
+const processMovieData = (data, text) => {
+    const subContainer = createSubContainer(text);
 
-    // 출연진 ?
+    data.forEach(data => {
+        const imgContainer = createImgContainer(data);
+        const posterContainer = subContainer.querySelector('.poster-container');
+        posterContainer.appendChild(imgContainer);
+    });
+
+    baseContainer.insertAdjacentElement('afterend', subContainer);
 }
 
 
+
+
+
 const processActorData = (data) => {
+
+    console.log(data);
 
     data.forEach(data => createActorContainer(data));
 }
@@ -58,10 +87,11 @@ function createActorContainer(data) {
     // link.href = `/detail/actor.html?id=${data.actorId}`;
 
     // img
+    const imgSize = "w300";
     const img = document.createElement('img');
     img.className = 'actor-poster';
     img.id = data.id; 
-    img.src = IMG_URL + data.file_path;
+    img.src = IMG_URL + imgSize + data.file_path;
 
     // <a> ----> img 
     link.appendChild(img);
@@ -88,78 +118,8 @@ function createActorContainer(data) {
 
 
 
-// 공통함수 싹다 합쳐야됨 processGenresData().... 등
-// ex) 내일할거임
-const 임시함수 = (제목, 무슨데이터생성햇는가) => {
-
-    // 내용은 똑같음 
-    const subContainer = createSubContainer(제목);
-
-    //분기
-    if (무슨데이터생성햇는가 == "곧개봉") {
-        // 개봉예정일 기준으로 뭐 대충 정렬하는 함수 호출
-    } else if (무슨데이터생성햇는가 == "현재상영") {
-        // 가장 많이 예매햇다던지(이건 기본값), 개봉일 내림차순으로 한다던지 뭐 
-    } else {
-        // 그 외 그냥 대충 popularity 기준으로 할거면 그냥 바로 createElemet 해버리면 됨
-    }
-
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        const posterContainer = subContainer.querySelector('.poster-container');
-        posterContainer.appendChild(imgContainer);
-    });
-
-    const mainContainer = document.querySelector('.main-container');
-    mainContainer.insertAdjacentElement('beforeend', subContainer);
-}
-
-
-
-
-const mainContainer = document.querySelector('.main-container');
-
-const processGenresData = (data) => {
-
-    const subContainer = createSubContainer("비슷한 장르의 작품들");
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        const posterContainer = subContainer.querySelector('.poster-container');
-        posterContainer.appendChild(imgContainer);
-    });
-
-    const mainContainer = document.querySelector('.main-container');
-    mainContainer.insertAdjacentElement('afterend', subContainer);
-}
-
-
-const processUpcomingData = (data) => {
-
-    const subContainer = createSubContainer("밍순!");
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        const posterContainer = subContainer.querySelector('.poster-container');
-        posterContainer.appendChild(imgContainer);
-    });
-
-    const mainContainer = document.querySelector('.main-container');
-    mainContainer.insertAdjacentElement('afterend', subContainer);
-
-}
-
-const processPopularityData = (data) => {
-
-    const subContainer = createSubContainer("최고의 작품들");
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        const posterContainer = subContainer.querySelector('.poster-container');
-        posterContainer.appendChild(imgContainer);
-    });
-
-    const mainContainer = document.querySelector('.main-container');
-    mainContainer.insertAdjacentElement('afterend', subContainer);
-
-}
+// 배우 
+const baseContainer = document.querySelector('.actor');
 
 
 
@@ -170,9 +130,10 @@ function createImgContainer(data) {
     const link = document.createElement('a');
     link.href = `/detail/detail.html?id=${data.id}`;
 
+    const imgSize = "w780"
     const img = document.createElement('img');
     img.className = 'sub-poster';
-    img.src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+    img.src = IMG_URL + imgSize + data.poster_path;
     img.alt = 'Movie Poster';
 
     link.appendChild(img);
@@ -229,8 +190,10 @@ function createDetailElement(data) {
 
 
     // 이미지 속성 변경
-    document.getElementById('backPosterImg').src = IMG_URL + img.back;
-    document.getElementById('moviePosterImg').src = IMG_URL + img.poster;
+    const backSize = "w1280";
+    const posterSize = "w780"
+    document.getElementById('backPosterImg').src = IMG_URL + backSize + img.back;
+    document.getElementById('moviePosterImg').src = IMG_URL + posterSize + img.poster;
 
     // 텍스트 변경
     document.getElementById('detailGenres02').textContent = data.genres.map((v) => v.name).join(', '); // 장르 배열을 콤마로 구분된 문자열로 설정
@@ -255,7 +218,7 @@ function getRandomImg(data) {
     if (data.belongs_to_collection.poster_path !== null) {
         if (randomNumber < 0.25) {
             img.back = data.belongs_to_collection.backdrop_path;
-            img.poster = data.belongs_to_collection.poster_path;
+            // img.poster = data.belongs_to_collection.poster_path;
         }
     } else {
         if (randomNumber < 0.25) {
