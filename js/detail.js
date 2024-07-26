@@ -95,6 +95,8 @@ function createDetailElement(data) {
     }
     
 
+    document.getElementById('back-img').src = IMG_URL + "original" + img.poster;
+
     // 이미지 속성 변경
     const backSize = "w1280";
     const posterSize = "w780"
