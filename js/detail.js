@@ -31,23 +31,60 @@ function processDetailData(data) {
     // fetchData({ type: "topRated", genres: data.genres }, "", processPopularityData);
 
     // 출연진 데이터
-    fetchDetailSub({credits: " "}, movieId, processActorData);
+    fetchActors({ credits: " " }, movieId, processActorData);
 
-    
-    
+
+
 
     // 출연진 ?
 }
 
 
 const processActorData = (data) => {
-    console.log("배우 데이터");
-    console.log(data);
 
-    const result = data.cast.map(({ id, name }) => ({ id, name }));
-
-    console.log(result);
+    data.forEach(data => createActorContainer(data));
 }
+
+function createActorContainer(data) {
+    // actor-main-container div
+    const parent = document.querySelector('.actor-main-container');
+
+    // actor-container div 
+    const actorContainer = document.createElement('div');
+    actorContainer.className = 'actor-container';
+
+    // a 
+    const link = document.createElement('a');
+    // link.href = `/detail/actor.html?id=${data.actorId}`;
+
+    // img
+    const img = document.createElement('img');
+    img.className = 'actor-poster';
+    img.id = data.id; 
+    img.src = IMG_URL + data.file_path;
+
+    // <a> ----> img 
+    link.appendChild(img);
+
+    // p 
+    const p = document.createElement('p');
+    p.className = 'actor-name';
+    p.id = 'actorName';
+    p.textContent = data.name; 
+
+    // actor-container ---->  <a>, <p> 
+    actorContainer.appendChild(link);
+    actorContainer.appendChild(p);
+
+    
+    // actor-main-container ---> actor-contaienr
+    parent.appendChild(actorContainer);
+
+    
+
+    // return actorContainer;
+}
+
 
 
 
@@ -59,11 +96,11 @@ const 임시함수 = (제목, 무슨데이터생성햇는가) => {
     const subContainer = createSubContainer(제목);
 
     //분기
-    if(무슨데이터생성햇는가 == "곧개봉"){
+    if (무슨데이터생성햇는가 == "곧개봉") {
         // 개봉예정일 기준으로 뭐 대충 정렬하는 함수 호출
-    }else if(무슨데이터생성햇는가 == "현재상영"){
+    } else if (무슨데이터생성햇는가 == "현재상영") {
         // 가장 많이 예매햇다던지(이건 기본값), 개봉일 내림차순으로 한다던지 뭐 
-    }else{
+    } else {
         // 그 외 그냥 대충 popularity 기준으로 할거면 그냥 바로 createElemet 해버리면 됨
     }
 
@@ -249,12 +286,13 @@ function getOverview(overview, maxLength) {
 
 
 // 동적으로 생성된 요소에 스크롤이벤트
-document.addEventListener('wheel', function(event) {
+document.addEventListener('wheel', function (event) {
     const targetElement = event.target;
 
     if (targetElement.closest('.poster-container')) {
         event.preventDefault(); // 기본 스크롤 이벤트 막기
 
+        // closet = 선택자를 현재 요소 기준 가장 가까운 부모에서 찾아줌 
         const posterContainer = targetElement.closest('.poster-container');
 
         const scrollAmount = event.deltaY;
@@ -262,6 +300,19 @@ document.addEventListener('wheel', function(event) {
 
         const scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
         const progressBar = posterContainer.nextElementSibling.querySelector('.bar');
+        progressBar.style.width = `${scrolledPercentage}%`;
+    }else if(targetElement.closest('.actor-main-container')){
+        event.preventDefault();
+
+        const container = targetElement.closest('.actor-main-container');
+        const parent = container.closest('.section-body');
+        const progress = parent.nextElementSibling;
+
+        const scrollAmount = event.deltaY;
+        container.scrollLeft += scrollAmount;
+
+        const scrolledPercentage = (container.scrollLeft / (container.scrollWidth - container.clientWidth)) * 100;
+        const progressBar = progress.querySelector('.bar');
         progressBar.style.width = `${scrolledPercentage}%`;
     }
 }, { passive: false });

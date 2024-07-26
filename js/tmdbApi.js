@@ -121,7 +121,7 @@ async function fetchData(searchCriteria, searchKey, processData) { // searchKey 
 
 
 // 영화 상세정보 (movieID)
-function generateDetailUrl(searchCriteria, movieId){
+function generateActorUrl(searchCriteria, movieId){
     /**
      * searchCriterial
      * credits: 출연진(감독)  Acting(Directing)   //'https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR'
@@ -152,15 +152,30 @@ async function fetchDetail(movieId){
     processDetailData(data);
 }
 
-// 상세페이지 (하단 영역 데이터)
-async function fetchDetailSub(searchCriteria, movieId, processData){
-    const url = generateDetailUrl(searchCriteria, movieId);
+// 상세페이지 ((배우, 배우사진))
+async function fetchActors(searchCriteria, movieId, processData){
+    const url = generateActorUrl(searchCriteria, movieId);
+
+    const res = await fetch(url).then(data => data.json());
+    let actors =  res.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
+
+    for(const actor of actors){
+        const url = generateActorUrl({actorId:actor.id});
+        const data = await fetch(url).then(data => data.json());
+        actor.file_path = data.profiles[0].file_path;
+
+    }
+    // actors.forEach(async (cur) => {
+    //     const url = generateActorUrl({actorId:cur.id});
+    //     const data = await fetch(url).then(data => data.json());
+
+    //     cur.file_path = data.profiles[0].file_path;
+    // });
 
     debugger;
 
-    const data = await fetch(url).then(data => data.json());
 
-    processData(data);
+    processData(actors);
 }
 
 
