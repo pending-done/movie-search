@@ -23,6 +23,8 @@ function processDetailMovieData(data) {
     console.log(data);
 
     createDetailElement(data);
+    // 배우 데이터
+    fetchActorsData(movieId, processActorsData);
     
     // 유형별 데이터 검색키
     const topRated = { type: "topRated", genres: data.genres };
@@ -45,8 +47,7 @@ function processDetailMovieData(data) {
         processMovieData(data, "비슷한 장르의 작품들")
     })
 
-    // 배우 데이터
-    fetchActorsData(movieId, processActorsData);
+
 }
 
 // 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
@@ -207,6 +208,7 @@ function createActorContainer(data) {
     
     // actor-main-container ---> actor-contaienr
     parent.appendChild(actorContainer);
+    
 }
 
 

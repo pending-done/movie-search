@@ -18,14 +18,14 @@ const DUMMY_GENRES = [
 ]
 
 
-function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null } = {}){
+function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null } = {}) {
     switch (type) {
         case 'topRated':
             return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}`;
         case 'upcoming':
             return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}`;
         case 'genres':
-            if(!genres || !countryCode) throw new Error('무슨 장르 보고싶은데?');
+            if (!genres || !countryCode) throw new Error('무슨 장르 보고싶은데?');
             return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
         case 'detail':
             if (!movieId) throw new Error('Movie ID가 없다네');
@@ -54,8 +54,8 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
 
 /********************************* 메인 페이지 **********************************/
 // 전체 국가
-async function fetchAllMoviesData(searchKey, callback){
-    const urlArr = generateUrl("ALL", {countryCode:"ALL", genres:DUMMY_GENRES});
+async function fetchAllMoviesData(searchKey, callback) {
+    const urlArr = generateUrl("ALL", { countryCode: "ALL", genres: DUMMY_GENRES });
     const movieList = [];
 
     for (const url of urlArr) {
@@ -68,13 +68,13 @@ async function fetchAllMoviesData(searchKey, callback){
 
 
 // 나라별
-async function fetchMoviesByCountry(countryCode, callback){
+async function fetchMoviesByCountry(countryCode, callback) {
     let url;
 
-    if(countryCode === "JP"){
-        url =  generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
-    }else{
-        url = generateUrl("byCountries", {countryCode, genres:DUMMY_GENRES});
+    if (countryCode === "JP") {
+        url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES });
+    } else {
+        url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES });
     }
 
     const data = await fetch(url).then((data) => data.json());
@@ -105,19 +105,19 @@ function searchAllData(data, searchKey) {
 
 /********************************** 상세페이지 **********************************/
 // 유형별 (인기, 장르, 곧 개봉 등)
-async function fetchTypeMoviesData(searchCriteria, callback){
+async function fetchTypeMoviesData(searchCriteria, callback) {
     let data;
-    if(searchCriteria.type === "topRated"){
+    if (searchCriteria.type === "topRated") {
         const url = generateUrl("topRated");
         data = await fetch(url).then((data) => data.json());
-    }else if(searchCriteria.type === "genres"){
+    } else if (searchCriteria.type === "genres") {
         const countryCode = searchCriteria.countryCode;
         const genres = searchCriteria.genres;
-        const url = generateUrl("genres",{countryCode, genres} )
+        const url = generateUrl("genres", { countryCode, genres })
         data = await fetch(url).then((data) => data.json());
-    }else if(searchCriteria.type === "upcoming"){
+    } else if (searchCriteria.type === "upcoming") {
         const url = generateUrl("upcoming");
-        data =  await fetch(url).then((data) => data.json());
+        data = await fetch(url).then((data) => data.json());
     }
 
     callback([...data.results]);
@@ -125,44 +125,47 @@ async function fetchTypeMoviesData(searchCriteria, callback){
 
 
 // 영화 상세정보(단일데이터)
-async function fetchDetailMovieData(movieId, processMovieData){
+async function fetchDetailMovieData(movieId, processMovieData) {
     //  const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
-     const url = generateUrl("detail", {movieId});
-     const data = await fetch(url).then(data => data.json());
+    const url = generateUrl("detail", { movieId });
+    const data = await fetch(url).then(data => data.json());
 
-     processMovieData(data);
+    processMovieData(data);
 }
 
 
 // 출연진, 배우사진
 async function fetchActorsData(movieId, callback) {
-    const url = generateUrl("credit", {movieId});
-    const credits = await fetch(url).then(data => data.json());
-    
-    // 배우 정보를 15 index까지 저장
-    // 부족할 경우 마지막 index 체크해서
-    // 다시 slice
-    let actors = credits.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
-    let sliceIndex = 0;
-    let shouldSliceArray = false;
-    for (const actor of actors) {
-        const url = generateUrl("actorImg", {actorId:actor.id});
-        const data = await fetch(url).then(data => data.json());
 
-        // 배우 상세정보가 없을때
-        if (!Array.isArray(data.profiles) || data.profiles.length === 0) {
-            shouldSliceArray = true;
-            break;
+    const url = generateUrl("credit", { movieId });
+
+    const credits = await fetch(url).then(data => data.json());
+
+    let actors = credits.cast.map(({ id, name, file_path }) => ({ id, name, file_path })).slice(0, 15);
+
+    // 기존 직렬? 로 처리되던 await fetcah(...) 을 Promise.all()을 사용해서 병렬 처리함  
+    // map(async actor => {...}) : async키워드를 주게되면 항상 promsie를 반환함
+    // fetchActorImgs는 [promise, promise ...]와 같은 형태의 데이터로 이루어지게 되고
+    // Promise.all()을 하면 저런 배열형태의 promise를 전부 처리해줌
+    const fetchActorImgs = actors.map(async (actor) => {
+        const url = generateUrl("actorImg", { actorId: actor.id });
+        const response = await fetch(url);
+        const data = await response.json();
+
+
+        if (data.profiles.length === 0) {
+            return actor;
         }
 
         actor.file_path = data.profiles[0].file_path;
-        sliceIndex++;
-    }
 
-    if (shouldSliceArray) {
-        actors = actors.slice(0, sliceIndex);
-    }
+        return actor;
+    });
 
-    callback(actors);
+
+    const results = await Promise.all(fetchActorImgs);
+
+
+    callback(results);
 }
 

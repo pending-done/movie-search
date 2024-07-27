@@ -14,9 +14,9 @@
 }
 
 .movie-container{
-    margin: 100px auto 0px auto;
-    margin-left: auto;
+    margin: 100px auto;
     width: 90%;
+    min-width: 1200px;
 
 }
 
@@ -58,7 +58,7 @@
     border-radius: 8px;
     background-color: #2a2929;
 
-    max-width: 100%;
+    max-width: 200px;
 }
 
 .movie-card:hover {
@@ -73,7 +73,7 @@
     border-radius: 8px;
     background-color: #2a2929;
 
-    max-width: 100%;
+    max-width: 200px;
     transform: scale(1.05);
     
 }
