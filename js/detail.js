@@ -360,6 +360,8 @@ document.addEventListener('wheel', function (event) {
         if (scrolledPercentage === 100) {
 
             processNextpage(targetElement);
+            // let scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
+            // progressBar.style.width = `${scrolledPercentage}%`;
         }
     } else if (targetElement.closest('.actor-main-container')) {
         event.preventDefault();

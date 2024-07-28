@@ -39,50 +39,6 @@ a:hover {
     text-decoration: underline;
 }
 
-.menu-box {
-    position: fixed;
-    top: 50%;
-    left: 60px;
-    transform: translateY(-50%);
-
-    display: flex;
-    justify-content: space-around;
-    flex-direction: column;
-    /* 세로 정렬을 위해 column으로 설정 */
-    background-color: rgb(32, 29, 29);
-    
-
-    /* border: 1px solid #1f0b0b; */
-    border-radius: 4px;
-}
-
-.menu-box>span {
-    font-family: 'SBAggroB';
-    padding: 3px 10px 3px 10px;
-    font-size: 18px;
-}
-
-.menu-text:hover{
-    background-color: black;
-    color: white;
-}
-
-.selected{
-    background-color: #efb33b;
-}
-.selected > a{
-    color: black;
-}
-
-.selected:hover{
-    background-color: black;
-}
-
-.selected:hover > a{
-    color: #efb33b;
-}
-
-
 
 .logo-box {
     margin: 25px auto;
