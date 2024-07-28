@@ -248,13 +248,19 @@ p{
 /* 각 슬라이드 요소 */
 .img-container {
     flex: 0 0 24%; /* 한 줄에 4개의 슬라이드가 보이도록 설정 */
-    width: 24%;
+    /* width: 24%; */
     box-sizing: border-box;
     padding: 10px; /* 슬라이드 사이 간격 설정 */
+
+    display: flex;
+    flex-direction: column;
 }
 
 .img-container img {
-    height: 100%;
+    width: 250px;
+    height: 375px;
+    object-fit: cover;
+    /* height: 100%; */
 }
 
 
@@ -277,11 +283,13 @@ p{
 }
 
 .actor-poster{
-    width: 200px;
-    height: 320px;
-    object-fit: cover;
+    /* 2:3 */
+    width: 180;
+    height: 270px;
+    object-fit: contain;
 
 }
+
 /* ************************* */
 
 

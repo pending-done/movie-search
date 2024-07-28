@@ -19,6 +19,13 @@ const upcoming = {name: "upcoming", countryCode: null, page:1};
 const type = {topRated, genres, upcoming};
 
 
+// TV 프로그램
+const KR = { countryCode: "KR", genres: 18, page: 1 };
+const JP = { countryCode: "JP", genres: 16, page: 1 };
+const US = { countryCode: "US", genres: 18, page: 1 };
+const tvConfig = { KR, JP, US };
+let detailCountry; // 영화의 발매국가 전역변수
+
 // 페이지 기본 로드
 fetchDetailMovieData(movieId, (data) => {
     processDetailMovieData(data);
@@ -31,10 +38,12 @@ fetchDetailMovieData(movieId, (data) => {
 
 // 영화 상세정보
 function processDetailMovieData(data) {
+    detailCountry = data.origin_country[0];
+
     // 상세데이터 생성
     console.log("상세데이터")
     console.log(data);
-    type.genres.countryCode = data.origin_country[0];
+    type.genres.countryCode = detailCountry;
     type.genres.genres = data.genres;
 
 
@@ -57,12 +66,51 @@ function processDetailMovieData(data) {
     fetchTypeMoviesData(type.genres, (data) => {
         processMovieData(data, "비슷한 장르의 작품들", "genres");
     })
+
+    let headerTitle;
+
+    if(detailCountry == "JP"){
+        headerTitle = "일본의 인기 애니메이션"
+    }else if(detailCountry == "KR"){
+        headerTitle = "한국의 인기 드라마"
+    }else{
+        headerTitle = "명작 미드" 
+    }
+    fetchTVData(tvConfig[detailCountry], (data) =>{
+        processTvData(data, headerTitle, "tv-show");
+    })
 }
+
+const processTvData = (data, text, type) =>{
+    data.forEach(item => {
+        item.title = item.name;
+    })
+
+    console.log("tv데이터들");
+    console.log(data);
+
+    const subContainer = createSubContainer(text, type);
+
+
+    data.forEach(data => {
+        const imgContainer = createImgContainer(data);
+        const posterContainer = subContainer.querySelector('.poster-container');
+        posterContainer.appendChild(imgContainer);
+    });
+
+    baseContainer.insertAdjacentElement('afterend', subContainer);
+    
+}
+
+
 
 // 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
 // 화살표함수인데 왜 호이스팅이 되는가에 대해서
 const processMovieData = (data, text, type) => {
     const subContainer = createSubContainer(text, type);
+
+    console.log("영화데이터들");
+    console.log(data);
 
     data.forEach(data => {
         const imgContainer = createImgContainer(data);
@@ -85,17 +133,24 @@ const processActorsData = (data) => {
 function processNextpage(targetElement) {
     const subContainer = targetElement.closest('.sub-container');
     const typeName = Array.from(subContainer.classList)[1];
-
-    type[typeName]['page']++;
-
     targetElement.closest('.poster-container');
-    
-
     const posterContainer = targetElement.closest('.poster-container');
 
-    fetchTypeMoviesData(type[typeName], (data) => {
-        createNextPageData(data, posterContainer);
-    })
+    if(typeName == "tv-show"){
+        tvConfig[detailCountry]['page']++;
+
+        fetchTVData(tvConfig[detailCountry], (data) =>{
+            createNextPageData(data, posterContainer);
+        })
+
+    }else{
+        type[typeName]['page']++;
+
+    
+        fetchTypeMoviesData(type[typeName], (data) => {
+            createNextPageData(data, posterContainer);
+        })
+    }
 }
 
 
@@ -200,8 +255,14 @@ function createImgContainer(data) {
     img.alt = 'Movie Poster';
 
     link.appendChild(img);
-    imgContainer.appendChild(link);
 
+    const p = document.createElement('p');
+    p.className = 'content-title';
+    p.id = 'contentTitle';
+    p.textContent = data.title;
+
+    imgContainer.appendChild(link);
+    imgContainer.appendChild(p);
     return imgContainer;
 }
 
@@ -360,8 +421,6 @@ document.addEventListener('wheel', function (event) {
         if (scrolledPercentage === 100) {
 
             processNextpage(targetElement);
-            // let scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
-            // progressBar.style.width = `${scrolledPercentage}%`;
         }
     } else if (targetElement.closest('.actor-main-container')) {
         event.preventDefault();

@@ -17,8 +17,7 @@ const DUMMY_GENRES = [
     { id: '' },
 ]
 
-
-function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, page = 1} = {}) {
+function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, sort, page = 1 } = {}) {
     switch (type) {
         case 'topRated':
             return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
@@ -26,7 +25,7 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
             return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
         case 'genres':
             if (!genres || !countryCode || !page) throw new Error('무슨 장르 보고싶은데?');
-            return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}&page=${page}`;
+            return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}&page=${page}&sort_by=popularity.desc`;
         case 'detail':
             if (!movieId) throw new Error('Movie ID가 없다네');
             return `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${LANGUAGE}`;
@@ -46,6 +45,10 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
                 if (code === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
                 return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
             });
+        case 'TV':
+            if (!countryCode || !genres) throw new Error('TV 프로그램을 보려면 장르와, 나라코드');
+            return `${BASE_URL}/discover/tv?api_key=${API_KEY}&language=${LANGUAGE}&with_genres=${genres}&with_origin_country=${countryCode}&sort_by=${sort}.desc&page=${page}`;
+            // if (!countryCode) throw new Error('TV 애니메이션 목록을 보려면 ...');
         default:
             throw new Error('url 어딘가 에러');
     }
@@ -81,6 +84,7 @@ async function fetchMoviesByCountry(countryConfig, callback) {
     }
 
     const data = await fetch(url).then((data) => data.json());
+
     callback([...data.results]);
 };
 
@@ -107,23 +111,60 @@ function searchAllData(data, searchKey) {
 
 
 /********************************** 상세페이지 **********************************/
+// TV 프로그램
+async function fetchTVData(searchCriteria, callback) {
+    let data;
+    const countryCode = searchCriteria.countryCode;
+    const genres = searchCriteria.genres;
+    const page = searchCriteria.page;
+    let sort = "popularity";
+
+
+    if (countryCode === "JP") {
+        const url = generateUrl("TV", { countryCode, genres, page,  sort});
+        data = await fetch(url).then((data) => data.json());
+    } else if (countryCode === "KR") {
+        const url = generateUrl("TV", { countryCode, genres, page, sort});
+        data = await fetch(url).then((data) => data.json());
+    } else if (countryCode === "US") {
+        sort = "vote_count";
+        const url = generateUrl("TV", { countryCode, genres, page, sort});
+        data = await fetch(url).then((data) => data.json());
+    }
+
+
+    data = setTitleOfTvData([...data.results]);
+
+    callback(data);
+}
+
+function setTitleOfTvData(data){
+    data.forEach(item => {
+        item.title = item.name;
+    })
+
+    return data;
+}
+
+
+
 // 유형별 (인기, 장르, 곧 개봉 등)
 async function fetchTypeMoviesData(searchCriteria, callback) {
     let data;
 
     if (searchCriteria.name === "topRated") {
         const page = searchCriteria.page;
-        const url = generateUrl("topRated", {page});
+        const url = generateUrl("topRated", { page });
         data = await fetch(url).then((data) => data.json());
     } else if (searchCriteria.name === "genres") {
         const countryCode = searchCriteria.countryCode;
         const genres = searchCriteria.genres;
         const page = searchCriteria.page;
-        const url = generateUrl("genres", { countryCode, genres, page})
+        const url = generateUrl("genres", { countryCode, genres, page })
         data = await fetch(url).then((data) => data.json());
     } else if (searchCriteria.name === "upcoming") {
         const page = searchCriteria.page;
-        const url = generateUrl("upcoming", {page});
+        const url = generateUrl("upcoming", { page });
         data = await fetch(url).then((data) => data.json());
     }
 
