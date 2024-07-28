@@ -2,12 +2,20 @@ const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id'); // 'id'에 해당하는 Query Parameter 값 가져오기
 // const IMG_URL = "https://image.tmdb.org/t/p/original";
 const IMG_URL = "https://image.tmdb.org/t/p/";
-const ORIGIN_COUNTRY_CODE = {   
+const ORIGIN_COUNTRY_CODE = {
     'US': '미국',
     'JP': '일본',
     'KR': '한국',
     'UK': '영국'
 }
+
+// 유형별 데이터 검색키
+const type = {
+    topRated:{name:"topRated", countryCode: null},
+    genres: {name: "genres", countryCode: null, genres: null, page: 1 },
+    upcoming: {name: "upcoming", countryCode: null},
+}
+
 
 console.log(`movie ID ${movieId}`);
 
@@ -21,30 +29,28 @@ function processDetailMovieData(data) {
     // 상세데이터 생성
     console.log("상세데이터")
     console.log(data);
+    type.genres.countryCode = data.origin_country[0];
+    type.genres.genres = data.genres;
+
 
     createDetailElement(data);
     // 배우 데이터
     fetchActorsData(movieId, processActorsData);
-    
-    // 유형별 데이터 검색키
-    const topRated = { type: "topRated", genres: data.genres };
-    const genres = { type:"genres", countryCode: data.origin_country[0], genres: data.genres };
-    const upcoming = {type: "upcoming", genres: data.genres};
-    
+
 
     //  인기 데이터 생성
-    fetchTypeMoviesData(topRated, (data) => {
-        processMovieData(data, "최고의 작품들")
+    fetchTypeMoviesData(type.topRated, (data) => {
+        processMovieData(data, "최고의 작품들", "topRated")
     })
 
     // 곧 개봉 데이터 
-    fetchTypeMoviesData(upcoming, (data) => {
-        processMovieData(data, "밍순!")
+    fetchTypeMoviesData(type.upcoming, (data) => {
+        processMovieData(data, "밍순!", "upcoming")
     })
-  
+
     // 장르 데이터
-    fetchTypeMoviesData(genres, (data) => {
-        processMovieData(data, "비슷한 장르의 작품들")
+    fetchTypeMoviesData(type.genres, (data) => {
+        processMovieData(data, "비슷한 장르의 작품들", "genres");
     })
 
 
@@ -52,8 +58,8 @@ function processDetailMovieData(data) {
 
 // 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
 // 화살표함수인데 왜 호이스팅이 되는가에 대해서
-const processMovieData = (data, text) => {
-    const subContainer = createSubContainer(text);
+const processMovieData = (data, text, type) => {
+    const subContainer = createSubContainer(text, type);
 
     data.forEach(data => {
         const imgContainer = createImgContainer(data);
@@ -86,7 +92,7 @@ const processActorsData = (data) => {
 function createDetailElement(data) {
     const img = getRandomImg(data);
     const overview = getOverview(data.overview, 200);
-    
+
     const country = ORIGIN_COUNTRY_CODE[data.origin_country];
     let title2 = "";
     if (data.original_title === data.title) {
@@ -94,7 +100,7 @@ function createDetailElement(data) {
     } else {
         title2 = data.original_title;
     }
-    
+
 
     document.getElementById('back-img').src = IMG_URL + "original" + img.poster;
 
@@ -115,9 +121,10 @@ function createDetailElement(data) {
 }
 
 // 유형별 영화 목록들
-function createSubContainer(header) {
+function createSubContainer(header, type) {
     const subContainer = document.createElement('div');
-    subContainer.className = 'sub-container';
+    subContainer.classList.add('sub-container', type);
+    // subContainer.className = 'sub-container';
 
     const section = document.createElement('section');
     section.className = 'sub-section';
@@ -190,7 +197,7 @@ function createActorContainer(data) {
     const imgSize = "w300";
     const img = document.createElement('img');
     img.className = 'actor-poster';
-    img.id = data.id; 
+    img.id = data.id;
     img.src = IMG_URL + imgSize + data.file_path;
 
     // <a> ----> img 
@@ -200,15 +207,15 @@ function createActorContainer(data) {
     const p = document.createElement('p');
     p.className = 'actor-name';
     p.id = 'actorName';
-    p.textContent = data.name; 
+    p.textContent = data.name;
 
     // actor-container ---->  <a>, <p> 
     actorContainer.appendChild(link);
     actorContainer.appendChild(p);
-    
+
     // actor-main-container ---> actor-contaienr
     parent.appendChild(actorContainer);
-    
+
 }
 
 
@@ -257,18 +264,18 @@ function getOverview(overview, maxLength) {
 /*********************************                               **********************************/
 /**************************************************************************************************/
 
-function getProgressBar(targetElement, className, colorCode){
+function changeColorOfProgressBar(targetElement, className, colorCode) {
     const element = targetElement.closest(className);
-    if(element){
+    if (element) {
         const nextElement = element.nextElementSibling;
-        if(nextElement){
+        if (nextElement) {
             bar = nextElement.querySelector('.bar');
-            if(bar){
+            if (bar) {
                 bar.style.backgroundColor = colorCode;
             }
         }
     }
-    
+
 }
 
 // 동적으로 생성된 이벤트(이벤트 위임)
@@ -284,10 +291,10 @@ document.addEventListener('mouseover', function (event) {
 
     if (targetElement.closest('.poster-container')) {
         event.preventDefault();
-        getProgressBar(targetElement, '.poster-container', '#ff0000');
+        changeColorOfProgressBar(targetElement, '.poster-container', '#ff0000');
 
     } else if (targetElement.closest('.section-body')) {
-        getProgressBar(targetElement, '.section-body', '#ff0000');
+        changeColorOfProgressBar(targetElement, '.section-body', '#ff0000');
     }
 }, { passive: false });
 
@@ -297,13 +304,31 @@ document.addEventListener('mouseout', function (event) {
 
     if (targetElement.closest('.poster-container')) {
         event.preventDefault();
-        
-        getProgressBar(targetElement, '.poster-container', '#efb33b');
-    } else if (targetElement.closest('.section-body')) {
-        getProgressBar(targetElement, '.section-body', '#efb33b');
-    }
-},{ passive: false });
 
+        changeColorOfProgressBar(targetElement, '.poster-container', '#efb33b');
+    } else if (targetElement.closest('.section-body')) {
+        changeColorOfProgressBar(targetElement, '.section-body', '#efb33b');
+    }
+}, { passive: false });
+
+
+function createNextpage(targetElement) {
+    type.genres.page++;
+
+    const posterContainer = targetElement.closest('.poster-container');
+
+    fetchTypeMoviesData(type.genres, (data) => {
+        appendNextPageData(data, posterContainer);
+    })
+}
+
+
+function appendNextPageData(data, posterContainer){
+    data.forEach(data => {
+        const imgContainer = createImgContainer(data);
+        posterContainer.appendChild(imgContainer);
+    });
+}
 
 
 document.addEventListener('wheel', function (event) {
@@ -321,8 +346,12 @@ document.addEventListener('wheel', function (event) {
         const scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
         const progressBar = posterContainer.nextElementSibling.querySelector('.bar');
         progressBar.style.width = `${scrolledPercentage}%`;
-        progressBar.style.backgroundColor = '#ff0000';
-    }else if(targetElement.closest('.actor-main-container')){
+        // progressBar.style.backgroundColor = '#ff0000';
+
+        if (scrolledPercentage === 100) {
+            createNextpage(targetElement);
+        }
+    } else if (targetElement.closest('.actor-main-container')) {
         event.preventDefault();
 
         const container = targetElement.closest('.actor-main-container');
@@ -335,6 +364,7 @@ document.addEventListener('wheel', function (event) {
         const scrolledPercentage = (container.scrollLeft / (container.scrollWidth - container.clientWidth)) * 100;
         const progressBar = progress.querySelector('.bar');
         progressBar.style.width = `${scrolledPercentage}%`;
+
     }
 }, { passive: false });
 

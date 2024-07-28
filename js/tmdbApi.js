@@ -18,15 +18,15 @@ const DUMMY_GENRES = [
 ]
 
 
-function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null } = {}) {
+function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, page = null} = {}) {
     switch (type) {
         case 'topRated':
             return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}`;
         case 'upcoming':
             return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}`;
         case 'genres':
-            if (!genres || !countryCode) throw new Error('무슨 장르 보고싶은데?');
-            return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
+            if (!genres || !countryCode || !page) throw new Error('무슨 장르 보고싶은데?');
+            return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}&page=${page}`;
         case 'detail':
             if (!movieId) throw new Error('Movie ID가 없다네');
             return `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${LANGUAGE}`;
@@ -107,15 +107,17 @@ function searchAllData(data, searchKey) {
 // 유형별 (인기, 장르, 곧 개봉 등)
 async function fetchTypeMoviesData(searchCriteria, callback) {
     let data;
-    if (searchCriteria.type === "topRated") {
+
+    if (searchCriteria.name === "topRated") {
         const url = generateUrl("topRated");
         data = await fetch(url).then((data) => data.json());
-    } else if (searchCriteria.type === "genres") {
+    } else if (searchCriteria.name === "genres") {
         const countryCode = searchCriteria.countryCode;
         const genres = searchCriteria.genres;
-        const url = generateUrl("genres", { countryCode, genres })
+        const page = searchCriteria.page;
+        const url = generateUrl("genres", { countryCode, genres, page})
         data = await fetch(url).then((data) => data.json());
-    } else if (searchCriteria.type === "upcoming") {
+    } else if (searchCriteria.name === "upcoming") {
         const url = generateUrl("upcoming");
         data = await fetch(url).then((data) => data.json());
     }
