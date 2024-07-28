@@ -21,9 +21,9 @@ const DUMMY_GENRES = [
 function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, page = null} = {}) {
     switch (type) {
         case 'topRated':
-            return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}`;
+            return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
         case 'upcoming':
-            return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}`;
+            return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
         case 'genres':
             if (!genres || !countryCode || !page) throw new Error('무슨 장르 보고싶은데?');
             return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}&page=${page}`;
@@ -109,7 +109,8 @@ async function fetchTypeMoviesData(searchCriteria, callback) {
     let data;
 
     if (searchCriteria.name === "topRated") {
-        const url = generateUrl("topRated");
+        const page = searchCriteria.page;
+        const url = generateUrl("topRated", {page});
         data = await fetch(url).then((data) => data.json());
     } else if (searchCriteria.name === "genres") {
         const countryCode = searchCriteria.countryCode;
@@ -118,7 +119,8 @@ async function fetchTypeMoviesData(searchCriteria, callback) {
         const url = generateUrl("genres", { countryCode, genres, page})
         data = await fetch(url).then((data) => data.json());
     } else if (searchCriteria.name === "upcoming") {
-        const url = generateUrl("upcoming");
+        const page = searchCriteria.page;
+        const url = generateUrl("upcoming", {page});
         data = await fetch(url).then((data) => data.json());
     }
 

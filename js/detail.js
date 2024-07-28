@@ -10,11 +10,11 @@ const ORIGIN_COUNTRY_CODE = {
 }
 
 // 유형별 데이터 검색키
-const type = {
-    topRated:{name:"topRated", countryCode: null},
-    genres: {name: "genres", countryCode: null, genres: null, page: 1 },
-    upcoming: {name: "upcoming", countryCode: null},
-}
+
+const topRated = {name:"topRated", countryCode: null, page:1};
+const genres = {name: "genres", countryCode: null, genres: null, page: 1 };
+const upcoming = {name: "upcoming", countryCode: null, page:1};
+const type = {topRated, genres, upcoming};
 
 
 console.log(`movie ID ${movieId}`);
@@ -77,6 +77,31 @@ const processActorsData = (data) => {
     data.forEach(data => createActorContainer(data));
 }
 
+
+// 다음 페이지 로드
+function processNextpage(targetElement) {
+    const subContainer = targetElement.closest('.sub-container');
+    const typeName = Array.from(subContainer.classList)[1];
+
+    type[typeName]['page']++;
+
+    targetElement.closest('.poster-container');
+    
+
+    const posterContainer = targetElement.closest('.poster-container');
+
+    fetchTypeMoviesData(type[typeName], (data) => {
+        createNextPageData(data, posterContainer);
+    })
+}
+
+
+function createNextPageData(data, posterContainer){
+    data.forEach(data => {
+        const imgContainer = createImgContainer(data);
+        posterContainer.appendChild(imgContainer);
+    });
+}
 
 
 
@@ -312,23 +337,7 @@ document.addEventListener('mouseout', function (event) {
 }, { passive: false });
 
 
-function createNextpage(targetElement) {
-    type.genres.page++;
 
-    const posterContainer = targetElement.closest('.poster-container');
-
-    fetchTypeMoviesData(type.genres, (data) => {
-        appendNextPageData(data, posterContainer);
-    })
-}
-
-
-function appendNextPageData(data, posterContainer){
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        posterContainer.appendChild(imgContainer);
-    });
-}
 
 
 document.addEventListener('wheel', function (event) {
@@ -349,7 +358,8 @@ document.addEventListener('wheel', function (event) {
         // progressBar.style.backgroundColor = '#ff0000';
 
         if (scrolledPercentage === 100) {
-            createNextpage(targetElement);
+            processNextpage(targetElement);
+            posterContainer.scrollLeft -= 100;
         }
     } else if (targetElement.closest('.actor-main-container')) {
         event.preventDefault();
