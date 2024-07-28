@@ -1,5 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id'); // 'id'에 해당하는 Query Parameter 값 가져오기
+console.log(`movie ID ${movieId}`);
+
 // const IMG_URL = "https://image.tmdb.org/t/p/original";
 const IMG_URL = "https://image.tmdb.org/t/p/";
 const ORIGIN_COUNTRY_CODE = {
@@ -17,12 +19,15 @@ const upcoming = {name: "upcoming", countryCode: null, page:1};
 const type = {topRated, genres, upcoming};
 
 
-console.log(`movie ID ${movieId}`);
-
 // 페이지 기본 로드
 fetchDetailMovieData(movieId, (data) => {
     processDetailMovieData(data);
-});
+}).then(() => {
+    onImagesLoaded(() => {
+        document.getElementById('loadingOverlay').style.opacity = 0;
+        document.getElementsByClassName('main-container')[0].style.display = 'block';
+    });
+});;
 
 // 영화 상세정보
 function processDetailMovieData(data) {
@@ -52,8 +57,6 @@ function processDetailMovieData(data) {
     fetchTypeMoviesData(type.genres, (data) => {
         processMovieData(data, "비슷한 장르의 작품들", "genres");
     })
-
-
 }
 
 // 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
@@ -337,9 +340,6 @@ document.addEventListener('mouseout', function (event) {
 }, { passive: false });
 
 
-
-
-
 document.addEventListener('wheel', function (event) {
     const targetElement = event.target;
 
@@ -352,14 +352,14 @@ document.addEventListener('wheel', function (event) {
         const scrollAmount = event.deltaY;
         posterContainer.scrollLeft += scrollAmount;
 
-        const scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
+        let scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
+
         const progressBar = posterContainer.nextElementSibling.querySelector('.bar');
         progressBar.style.width = `${scrolledPercentage}%`;
-        // progressBar.style.backgroundColor = '#ff0000';
 
         if (scrolledPercentage === 100) {
+
             processNextpage(targetElement);
-            posterContainer.scrollLeft -= 100;
         }
     } else if (targetElement.closest('.actor-main-container')) {
         event.preventDefault();
@@ -378,10 +378,32 @@ document.addEventListener('wheel', function (event) {
     }
 }, { passive: false });
 
-// 페이지 로딩 애니메이션
-(function () {
-    setTimeout(() => {
-        document.getElementById('loadingOverlay').style.opacity = 0;
-        document.getElementsByClassName('main-container')[0].style.display = 'block';
-    }, 700)
-})()
+
+
+// 이미지들이 전부 로드 되었는지 확인
+function onImagesLoaded(callback) {
+    const images = document.querySelectorAll('img'); 
+
+    if (images.length === 0) {
+        callback();
+        return;
+    }
+
+    let loadedCount = 0;
+
+    images.forEach((image) => {
+        if (image.complete) {   // image가 이미 로드완료된 상태라면
+            loadedCount++;
+            if (loadedCount === images.length) {
+                callback();
+            }
+        } else {
+            image.addEventListener('load', () => {  // 로드되지 않은 image가 load되면
+                loadedCount++;
+                if (loadedCount === images.length) {
+                    callback();
+                }
+            });
+        }
+    });
+}

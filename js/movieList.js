@@ -1,11 +1,25 @@
+const KR = { countryCode: "KR", page: 1 };
+const JP = { countryCode: "JP", genres: 16, page: 1 };
+const US = { countryCode: "US", page: 1 };
+const countryConfig = { KR, JP, US };
+let selectedCountry = "";
+
+
+
+
 
 // 데이터 처리
 const processData = (data) => {
     clearHTML();
+    data = filterMovieData(data);
 
     data.forEach(data => {
         createHTML(data);
     });
+}
+
+function filterMovieData(data) {
+    return data.filter(data => data.vote_count >= 15);
 }
 
 // HTML Clear
@@ -26,7 +40,7 @@ function createHTML(data) {
     const release_date = data.release_date || '2024-01-01'; // 날짜 없는 애들 더미용
     const overview = data.overview;
     const popularity = data.popularity;
-    const vote_average =  Math.round(data.vote_average * 10) / 10;;
+    const vote_average = Math.round(data.vote_average * 10) / 10;;
     const vote_count = data.vote_count;
 
     const movieList = document.getElementById('movieList');
@@ -74,7 +88,7 @@ function createHTML(data) {
     contentBoxDiv.appendChild(p1);
 
     let p2 = document.createElement("p");
-    p2.textContent = vote_average; 
+    p2.textContent = vote_average;
     contentBoxDiv.appendChild(p2);
 
     contentDiv.appendChild(contentBoxDiv);
@@ -95,14 +109,50 @@ document.getElementById('inputSearch').addEventListener('input', function (e) {
 // 메뉴 클릭 이벤트
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    if (target.id === "ALL") {
-        fetchAllMoviesData("", processData);
-    } else {
-        fetchMoviesByCountry(target.id, processData)
+    selectedCountry = target.id;
+
+    if(countryConfig[selectedCountry]){
+        countryConfig[selectedCountry].page = 1;
     }
 
+    if (selectedCountry === "ALL") {
+        fetchAllMoviesData("", processData);
+    } else {
+        fetchMoviesByCountry(countryConfig[selectedCountry], processData);
+    }
+
+    // 메뉴클릭시 css 변경
+    document.querySelector('.menu-text.selected')?.classList.remove('selected');
+    target.classList.add('selected');
 }))
 
 
 // 페이지 로드 (전체데이터)
 fetchAllMoviesData("", processData);
+
+
+window.addEventListener('scroll', () => {
+    // 문서 전체의 높이
+    const documentHeight = document.documentElement.scrollHeight;
+    // 현재 스크롤 위치 + 브라우저 뷰포트의 높이
+    const scrollPosition = window.innerHeight + window.scrollY;
+
+    // 현재 스크롤 위치가 문서의 끝에 도달했는지 확인
+    if (scrollPosition >= documentHeight) {
+        countryConfig[selectedCountry].page++;
+        fetchMoviesByCountry(countryConfig[selectedCountry], (data) => {
+            processNextpage(data);
+        });
+    }
+});
+
+function processNextpage(data) {
+    console.log(countryConfig);
+    console.log(data);
+
+    data = filterMovieData(data);
+
+    data.forEach(data => {
+        createHTML(data);
+    });
+}

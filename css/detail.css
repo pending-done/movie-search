@@ -326,7 +326,7 @@ p{
     height: 50px;
     border-radius: 50%;
     border: 3px solid #333;
-    border-top-color: #777;
+    border-top-color: #efb33b;
     animation: spin 1s linear infinite;
 }
 

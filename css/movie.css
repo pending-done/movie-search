@@ -37,14 +37,7 @@
     position: relative;
 }
 
-.menu-selected {
-    position: absolute;
-    /* top: 0;  */
-    left: 0;
-    bottom: 100%; 
-    background-color: rgba(255, 255, 255, 0.8); /* 배경색 지정 */
-    padding: 10px; /* 내부 여백 설정 */
-}
+
 
 .movie-card {
     width: 100%;
@@ -75,7 +68,6 @@
 
     max-width: 200px;
     transform: scale(1.05);
-    
 }
 
 

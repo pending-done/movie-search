@@ -57,15 +57,31 @@ a:hover {
 }
 
 .menu-box>span {
+    font-family: 'SBAggroB';
     padding: 3px 10px 3px 10px;
-    font-size: 20px;
-    /* margin-top: 5px; */
+    font-size: 18px;
 }
 
 .menu-text:hover{
     background-color: black;
     color: white;
 }
+
+.selected{
+    background-color: #efb33b;
+}
+.selected > a{
+    color: black;
+}
+
+.selected:hover{
+    background-color: black;
+}
+
+.selected:hover > a{
+    color: #efb33b;
+}
+
 
 
 .logo-box {

@@ -18,7 +18,7 @@ const DUMMY_GENRES = [
 ]
 
 
-function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, page = null} = {}) {
+function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, page = 1} = {}) {
     switch (type) {
         case 'topRated':
             return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
@@ -32,8 +32,8 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
             return `${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&language=${LANGUAGE}`;
         case 'byCountries':
             if (!countryCode || !genres) throw new Error('나라별 영화는 countryCode랑 genres가 필수이거늘');
-            if (countryCode === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
-            if (countryCode !== "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`
+            if (countryCode === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=16&without_genres=${WITHOUT_GENRES}}&page=${page}`;
+            if (countryCode !== "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}}&page=${page}`
         case 'credit':
             if (!movieId) throw new Error('출연진을 보려면 movie ID를 넣어야지');
             return `${BASE_URL}/movie/${movieId}/credits?language=${LANGUAGE}&api_key=${API_KEY}`;
@@ -68,13 +68,16 @@ async function fetchAllMoviesData(searchKey, callback) {
 
 
 // 나라별
-async function fetchMoviesByCountry(countryCode, callback) {
+async function fetchMoviesByCountry(countryConfig, callback) {
     let url;
+    const countryCode = countryConfig.countryCode;
+    const page = countryConfig.page;
 
     if (countryCode === "JP") {
-        url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES });
+        url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES, page });
     } else {
-        url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES });
+
+        url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES, page });
     }
 
     const data = await fetch(url).then((data) => data.json());
