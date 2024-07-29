@@ -42,8 +42,8 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
         case 'ALL':
             if (!countryCode) throw new Error('전체영화 목록을 보려면 countryCode를 잊지마');
             return COUNTRY_CODES.map((code) => {
-                if (code === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=16&without_genres=${WITHOUT_GENRES}`;
-                return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}`;
+                if (code === "JP") return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=16&without_genres=${WITHOUT_GENRES}}&sort_by=vote_count.desc`;
+                return `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${code}&with_genres=${genres[0].id}&without_genres=${WITHOUT_GENRES}&sort_by=vote_count.desc`;
             });
         case 'TV':
             if (!countryCode || !genres) throw new Error('TV 프로그램을 보려면 장르와, 나라코드');
@@ -59,33 +59,46 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
 // 전체 국가
 async function fetchAllMoviesData(searchKey, callback) {
     const urlArr = generateUrl("ALL", { countryCode: "ALL", genres: DUMMY_GENRES });
-    const movieList = [];
 
-    for (const url of urlArr) {
-        const data = await fetch(url).then((data) => data.json());
-        movieList.push(...data.results);
+    try{
+        const allMovieDataPromise = urlArr.map(url => fetch(url).then(res => res.json()));
+        const movieListOfCountrires = await Promise.all(allMovieDataPromise);
+
+        // flatMap: map과 비슷하지만 배열안의 배열을 리턴하면 map 같은 경우 중첩 배열이 생성되지만 
+        //          flatMap은 전개연산자를 쓴것처럼 배열을 평탄화해서 리턴해줌 (1단계 중첩만)
+        //      ex) map => [[1], [2], [3]] / flatMap => [1, 2, 3];
+        const mergedResults = movieListOfCountrires.flatMap(data => data.results);
+
+        sortByPopularityDesc(mergedResults, searchKey, callback);
+
+    }catch(e){
+        console.log("전체 국가 api 에러");
+        debugger;
     }
-
-    sortByPopularityDesc(movieList, searchKey, callback);
+    
 }
 
 
 // 나라별
 async function fetchMoviesByCountry(countryConfig, callback) {
     let url;
-    const countryCode = countryConfig.countryCode;
-    const page = countryConfig.page;
+    const {countryCode, page} = countryConfig;
 
     if (countryCode === "JP") {
         url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES, page });
     } else {
-
         url = generateUrl("byCountries", { countryCode, genres: DUMMY_GENRES, page });
     }
 
-    const data = await fetch(url).then((data) => data.json());
-
-    callback([...data.results]);
+    try{
+        const res = await fetch(url);
+        const data = await res.json();
+    
+        callback([...data.results]);
+    }catch(e){
+        console.log("나라별 api 에러")
+        debugger;
+    }
 };
 
 // 전체 데이터 인기순 정렬
@@ -114,30 +127,30 @@ function searchAllData(data, searchKey) {
 // TV 프로그램
 async function fetchTVData(searchCriteria, callback) {
     let data;
-    const countryCode = searchCriteria.countryCode;
-    const genres = searchCriteria.genres;
-    const page = searchCriteria.page;
+    const {countryCode, genres, page} = searchCriteria;
     let sort = "popularity";
 
-
-    if (countryCode === "JP") {
-        const url = generateUrl("TV", { countryCode, genres, page,  sort});
-        data = await fetch(url).then((data) => data.json());
-    } else if (countryCode === "KR") {
-        const url = generateUrl("TV", { countryCode, genres, page, sort});
-        data = await fetch(url).then((data) => data.json());
-    } else if (countryCode === "US") {
-        sort = "vote_count";
-        const url = generateUrl("TV", { countryCode, genres, page, sort});
-        data = await fetch(url).then((data) => data.json());
+    if(countryCode === 'US'){
+        sort = 'vote_count';    // 미국이면 명작순 정렬
+        url = generateUrl("TV", { countryCode, genres, page, sort});
+    }else{
+        url = generateUrl("TV", { countryCode, genres, page, sort});
     }
 
-
-    data = setTitleOfTvData([...data.results]);
+    try{
+        const res = await fetch(url);
+        data = await res.json();
+        data = setTitleOfTvData([...data.results]);
+        
+    }catch(e){
+        console.log("TV api 에러")
+        debugger;
+    }
 
     callback(data);
 }
 
+// TV 데이터는 title이 아닌 name으로 되어있는데 title속성 따로 추가
 function setTitleOfTvData(data){
     data.forEach(item => {
         item.title = item.name;
@@ -150,25 +163,30 @@ function setTitleOfTvData(data){
 
 // 유형별 (인기, 장르, 곧 개봉 등)
 async function fetchTypeMoviesData(searchCriteria, callback) {
-    let data;
-
-    if (searchCriteria.name === "topRated") {
-        const page = searchCriteria.page;
-        const url = generateUrl("topRated", { page });
-        data = await fetch(url).then((data) => data.json());
-    } else if (searchCriteria.name === "genres") {
-        const countryCode = searchCriteria.countryCode;
-        const genres = searchCriteria.genres;
-        const page = searchCriteria.page;
-        const url = generateUrl("genres", { countryCode, genres, page })
-        data = await fetch(url).then((data) => data.json());
-    } else if (searchCriteria.name === "upcoming") {
-        const page = searchCriteria.page;
-        const url = generateUrl("upcoming", { page });
-        data = await fetch(url).then((data) => data.json());
+    const { name, countryCode, genres, page } = searchCriteria;
+    let url;
+    switch (name) {
+        case 'topRated':
+            url = generateUrl('topRated', { page });
+            break;
+        case 'genres':
+            url = generateUrl('genres', { countryCode, genres, page });
+            break;
+        case 'upcoming':
+            url = generateUrl('upcoming', { page });
+            break;
+        default:
+            debugger;
     }
 
-    callback([...data.results]);
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        callback([...data.results]);
+    } catch (error) {
+        debugger;
+    }
 }
 
 
@@ -195,25 +213,21 @@ async function fetchActorsData(movieId, callback) {
     // map(async actor => {...}) : async키워드를 주게되면 항상 promsie를 반환함
     // fetchActorImgs는 [promise, promise ...]와 같은 형태의 데이터로 이루어지게 되고
     // Promise.all()을 하면 저런 배열형태의 promise를 전부 처리해줌
-    const fetchActorImgs = actors.map(async (actor) => {
-        const url = generateUrl("actorImg", { actorId: actor.id });
-        const response = await fetch(url);
-        const data = await response.json();
-
-
-        if (data.profiles.length === 0) {
-            return actor;
-        }
-
-        actor.file_path = data.profiles[0].file_path;
-
-        return actor;
-    });
-
-
-    const results = await Promise.all(fetchActorImgs);
-
-
+    const results = await Promise.all(actors.map((actor) => fetchActorImg(actor)));
     callback(results);
+}
+
+async function fetchActorImg(actor){
+    const url = generateUrl("actorImg", { actorId: actor.id });
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.profiles.length === 0) {
+        return actor;
+    }
+
+    actor.file_path = data.profiles[0].file_path;
+
+    return actor;
 }
 

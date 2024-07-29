@@ -46,27 +46,6 @@ function processDetailMovieData(data) {
     type.genres.countryCode = detailCountry;
     type.genres.genres = data.genres;
 
-
-    createDetailElement(data);
-    // 배우 데이터
-    fetchActorsData(movieId, processActorsData);
-
-
-    //  인기 데이터 생성
-    fetchTypeMoviesData(type.topRated, (data) => {
-        processMovieData(data, "최고의 작품들", "topRated")
-    })
-
-    // 곧 개봉 데이터 
-    fetchTypeMoviesData(type.upcoming, (data) => {
-        processMovieData(data, "밍순!", "upcoming")
-    })
-
-    // 장르 데이터
-    fetchTypeMoviesData(type.genres, (data) => {
-        processMovieData(data, "비슷한 장르의 작품들", "genres");
-    })
-
     let headerTitle;
 
     if(detailCountry == "JP"){
@@ -76,10 +55,56 @@ function processDetailMovieData(data) {
     }else{
         headerTitle = "명작 미드" 
     }
+
+    createDetailElement(data);
+    // 배우 데이터
+    fetchActorsData(movieId, processActorsData);
+
+    console.time("후")
+    const request = [
+    //  인기 데이터 생성
+    fetchTypeMoviesData(type.topRated, (data) => {
+        processMovieData(data, "최고의 작품들", "topRated") // 얘가 먼저 실행되었따는 개념이 아님
+    }),
+
+    // 곧 개봉 데이터 
+    fetchTypeMoviesData(type.upcoming, (data) => {
+        processMovieData(data, "밍순!", "upcoming")
+    }),
+
+    // 장르 데이터
+    fetchTypeMoviesData(type.genres, (data) => {
+        processMovieData(data, "비슷한 장르의 작품들", "genres");
+    }),
+
+
     fetchTVData(tvConfig[detailCountry], (data) =>{
         processTvData(data, headerTitle, "tv-show");
-    })
+    }),
+    ]
+
+    Promise.all(request);
+    console.timeEnd("후")
 }
+
+// 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
+// 화살표함수인데 왜 호이스팅이 되는가에 대해서
+const processMovieData = (data, text, type) => {
+    const subContainer = createSubContainer(text, type);
+
+    console.log("영화데이터들");
+    console.log(data);
+
+    data.forEach(data => {
+        const imgContainer = createImgContainer(data);
+        const posterContainer = subContainer.querySelector('.poster-container');
+        posterContainer.appendChild(imgContainer);
+    });
+
+    baseContainer.insertAdjacentElement('afterend', subContainer);
+}
+
+
 
 const processTvData = (data, text, type) =>{
     data.forEach(item => {
@@ -103,23 +128,6 @@ const processTvData = (data, text, type) =>{
 }
 
 
-
-// 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
-// 화살표함수인데 왜 호이스팅이 되는가에 대해서
-const processMovieData = (data, text, type) => {
-    const subContainer = createSubContainer(text, type);
-
-    console.log("영화데이터들");
-    console.log(data);
-
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        const posterContainer = subContainer.querySelector('.poster-container');
-        posterContainer.appendChild(imgContainer);
-    });
-
-    baseContainer.insertAdjacentElement('afterend', subContainer);
-}
 
 // 배우 데이터 처리 함수
 const processActorsData = (data) => {
