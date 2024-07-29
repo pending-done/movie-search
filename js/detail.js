@@ -11,11 +11,10 @@ const ORIGIN_COUNTRY_CODE = {
     'UK': '영국'
 }
 
-// 유형별 데이터 검색키
-
-const topRated = {name:"topRated", countryCode: null, page:1};
+// 유형별 데이터 검색키 (장르, 곧 개봉, 명작 ...)
 const genres = {name: "genres", countryCode: null, genres: null, page: 1 };
 const upcoming = {name: "upcoming", countryCode: null, page:1};
+const topRated = {name:"topRated", countryCode: null, page:1};
 const type = {topRated, genres, upcoming};
 
 
@@ -26,7 +25,7 @@ const US = { countryCode: "US", genres: 18, page: 1 };
 const tvConfig = { KR, JP, US };
 let detailCountry; // 영화의 발매국가 전역변수
 
-// 페이지 기본 로드
+// 페이지 기본 로드 (이미지 로드 될때까지 로딩 아이콘 표시)
 fetchDetailMovieData(movieId, (data) => {
     processDetailMovieData(data);
 }).then(() => {
@@ -39,10 +38,6 @@ fetchDetailMovieData(movieId, (data) => {
 // 영화 상세정보
 function processDetailMovieData(data) {
     detailCountry = data.origin_country[0];
-
-    // 상세데이터 생성
-    console.log("상세데이터")
-    console.log(data);
     type.genres.countryCode = detailCountry;
     type.genres.genres = data.genres;
 
@@ -56,45 +51,32 @@ function processDetailMovieData(data) {
         headerTitle = "명작 미드" 
     }
 
+    // 상세데이터 생성
     createDetailElement(data);
     // 배우 데이터
     fetchActorsData(movieId, processActorsData);
-
-    console.time("후")
-    const request = [
     //  인기 데이터 생성
     fetchTypeMoviesData(type.topRated, (data) => {
         processMovieData(data, "최고의 작품들", "topRated") // 얘가 먼저 실행되었따는 개념이 아님
-    }),
-
+    });
     // 곧 개봉 데이터 
     fetchTypeMoviesData(type.upcoming, (data) => {
         processMovieData(data, "밍순!", "upcoming")
-    }),
-
+    });
     // 장르 데이터
     fetchTypeMoviesData(type.genres, (data) => {
         processMovieData(data, "비슷한 장르의 작품들", "genres");
-    }),
-
-
+    });
+    // TV 데이터
     fetchTVData(tvConfig[detailCountry], (data) =>{
-        processTvData(data, headerTitle, "tv-show");
-    }),
-    ]
-
-    Promise.all(request);
-    console.timeEnd("후")
+        processMovieData(data, headerTitle, "tv-show");
+    });
 }
 
 // 유형별 데이터 처리 통합 함수 (인기, 곧 개봉, 장르)
-// 화살표함수인데 왜 호이스팅이 되는가에 대해서
 const processMovieData = (data, text, type) => {
     const subContainer = createSubContainer(text, type);
 
-    console.log("영화데이터들");
-    console.log(data);
-
     data.forEach(data => {
         const imgContainer = createImgContainer(data);
         const posterContainer = subContainer.querySelector('.poster-container');
@@ -102,74 +84,14 @@ const processMovieData = (data, text, type) => {
     });
 
     baseContainer.insertAdjacentElement('afterend', subContainer);
-}
-
-
-
-const processTvData = (data, text, type) =>{
-    data.forEach(item => {
-        item.title = item.name;
-    })
-
-    console.log("tv데이터들");
-    console.log(data);
-
-    const subContainer = createSubContainer(text, type);
-
-
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        const posterContainer = subContainer.querySelector('.poster-container');
-        posterContainer.appendChild(imgContainer);
-    });
-
-    baseContainer.insertAdjacentElement('afterend', subContainer);
-    
 }
 
 
 
 // 배우 데이터 처리 함수
 const processActorsData = (data) => {
-    console.log("배우데이터")
-    console.log(data);
     data.forEach(data => createActorContainer(data));
 }
-
-
-// 다음 페이지 로드
-function processNextpage(targetElement) {
-    const subContainer = targetElement.closest('.sub-container');
-    const typeName = Array.from(subContainer.classList)[1];
-    targetElement.closest('.poster-container');
-    const posterContainer = targetElement.closest('.poster-container');
-
-    if(typeName == "tv-show"){
-        tvConfig[detailCountry]['page']++;
-
-        fetchTVData(tvConfig[detailCountry], (data) =>{
-            createNextPageData(data, posterContainer);
-        })
-
-    }else{
-        type[typeName]['page']++;
-
-    
-        fetchTypeMoviesData(type[typeName], (data) => {
-            createNextPageData(data, posterContainer);
-        })
-    }
-}
-
-
-function createNextPageData(data, posterContainer){
-    data.forEach(data => {
-        const imgContainer = createImgContainer(data);
-        posterContainer.appendChild(imgContainer);
-    });
-}
-
-
 
 
 
@@ -192,7 +114,6 @@ function createDetailElement(data) {
         title2 = data.original_title;
     }
 
-
     document.getElementById('back-img').src = IMG_URL + "original" + img.poster;
 
     // 이미지 속성 변경
@@ -211,11 +132,10 @@ function createDetailElement(data) {
     document.getElementById("detailDate02").textContent = data.release_date;
 }
 
-// 유형별 영화 목록들
+// 유형별 영화 목록들 (장르, 곧 개봉, 명작 등 ..)
 function createSubContainer(header, type) {
     const subContainer = document.createElement('div');
     subContainer.classList.add('sub-container', type);
-    // subContainer.className = 'sub-container';
 
     const section = document.createElement('section');
     section.className = 'sub-section';
@@ -323,6 +243,38 @@ function createActorContainer(data) {
 /*********************************                               **********************************/
 /**************************************************************************************************/
 
+// 다음 페이지 로드
+function processNextpage(targetElement) {
+    const subContainer = targetElement.closest('.sub-container');
+    const typeName = Array.from(subContainer.classList)[1];
+    targetElement.closest('.poster-container');
+    const posterContainer = targetElement.closest('.poster-container');
+
+    if(typeName == "tv-show"){
+        tvConfig[detailCountry]['page']++;
+
+        fetchTVData(tvConfig[detailCountry], (data) =>{
+            createNextPageData(data, posterContainer);
+        })
+
+    }else{
+        type[typeName]['page']++;
+
+    
+        fetchTypeMoviesData(type[typeName], (data) => {
+            createNextPageData(data, posterContainer);
+        })
+    }
+}
+
+
+function createNextPageData(data, posterContainer){
+    data.forEach(data => {
+        const imgContainer = createImgContainer(data);
+        posterContainer.appendChild(imgContainer);
+    });
+}
+
 
 // 배경이미지, 포스터이미지 랜덤
 function getRandomImg(data) {
@@ -346,6 +298,7 @@ function getRandomImg(data) {
     return img;
 }
 
+// 줄거리 길면 자르고 뒤에 . . . 붙임
 function getOverview(overview, maxLength) {
     if (overview.length > maxLength) {
         return overview.substring(0, maxLength) + ". . .";
@@ -361,19 +314,7 @@ function getOverview(overview, maxLength) {
 /*********************************                               **********************************/
 /**************************************************************************************************/
 
-function changeColorOfProgressBar(targetElement, className, colorCode) {
-    const element = targetElement.closest(className);
-    if (element) {
-        const nextElement = element.nextElementSibling;
-        if (nextElement) {
-            bar = nextElement.querySelector('.bar');
-            if (bar) {
-                bar.style.backgroundColor = colorCode;
-            }
-        }
-    }
-
-}
+// (1) 마우스올리면 프로그레스바 색상 변경 이벤트 
 
 // 동적으로 생성된 이벤트(이벤트 위임)
 // closet()에 매개변수로 선택자를 넣어주면
@@ -409,43 +350,60 @@ document.addEventListener('mouseout', function (event) {
 }, { passive: false });
 
 
+function changeColorOfProgressBar(targetElement, className, colorCode) {
+    const element = targetElement.closest(className);
+    if (element) {
+        const nextElement = element.nextElementSibling;
+        if (nextElement) {
+            bar = nextElement.querySelector('.bar');
+            if (bar) {
+                bar.style.backgroundColor = colorCode;
+            }
+        }
+    }
+}
+
+
+// (2) 스크롤시 프로그레스바 너비 변경 이벤트
 document.addEventListener('wheel', function (event) {
     const targetElement = event.target;
 
     if (targetElement.closest('.poster-container')) {
         event.preventDefault(); // 기본 스크롤 이벤트 막기
-
-        // closet = 선택자를 현재 요소 기준 가장 가까운 부모에서 찾아줌 
-        const posterContainer = targetElement.closest('.poster-container');
-
-        const scrollAmount = event.deltaY;
-        posterContainer.scrollLeft += scrollAmount;
-
-        let scrolledPercentage = (posterContainer.scrollLeft / (posterContainer.scrollWidth - posterContainer.clientWidth)) * 100;
-
-        const progressBar = posterContainer.nextElementSibling.querySelector('.bar');
-        progressBar.style.width = `${scrolledPercentage}%`;
-
-        if (scrolledPercentage === 100) {
-
-            processNextpage(targetElement);
-        }
+        handleScroll(event, ".poster-container");
     } else if (targetElement.closest('.actor-main-container')) {
         event.preventDefault();
-
-        const container = targetElement.closest('.actor-main-container');
-        const parent = container.closest('.section-body');
-        const progress = parent.nextElementSibling;
-
-        const scrollAmount = event.deltaY;
-        container.scrollLeft += scrollAmount;
-
-        const scrolledPercentage = (container.scrollLeft / (container.scrollWidth - container.clientWidth)) * 100;
-        const progressBar = progress.querySelector('.bar');
-        progressBar.style.width = `${scrolledPercentage}%`;
-
+        handleScroll(event, ".actor-main-container");
     }
 }, { passive: false });
+
+function handleScroll(event, containerSelector) {
+    const targetElement = event.target;
+    
+    const container = targetElement.closest(containerSelector);
+    let parent;
+    let progressBar;
+
+    if(containerSelector === '.actor-main-container'){
+        debugger;
+        parent = container.closest('.section-body');
+        progressBar = parent.nextElementSibling.querySelector('.bar');
+    }else{
+        progressBar = container.nextElementSibling.querySelector('.bar');
+    }
+
+    const scrollAmount = event.deltaY;
+    container.scrollLeft += scrollAmount;
+
+    let scrolledPercentage = (container.scrollLeft / (container.scrollWidth - container.clientWidth)) * 100;
+    progressBar.style.width = `${scrolledPercentage}%`;
+
+
+    if (scrolledPercentage === 100 && containerSelector === '.poster-container') {
+        processNextpage(targetElement);
+    }
+}
+
 
 
 
