@@ -40,6 +40,7 @@ function processDetailMovieData(data) {
     detailCountry = data.origin_country[0];
     type.genres.countryCode = detailCountry;
     type.genres.genres = data.genres;
+    type.topRated.countryCode = detailCountry;
 
     let headerTitle;
 
@@ -114,7 +115,8 @@ function createDetailElement(data) {
         title2 = data.original_title;
     }
 
-    document.getElementById('back-img').src = IMG_URL + "original" + img.poster;
+    // document.getElementById('back-img').src = IMG_URL + "original" + img.poster;
+    document.getElementById('back').style.backgroundImage = `url(${IMG_URL + "original" + img.poster})`;
 
     // 이미지 속성 변경
     const backSize = "w1280";
@@ -385,7 +387,6 @@ function handleScroll(event, containerSelector) {
     let progressBar;
 
     if(containerSelector === '.actor-main-container'){
-        debugger;
         parent = container.closest('.section-body');
         progressBar = parent.nextElementSibling.querySelector('.bar');
     }else{

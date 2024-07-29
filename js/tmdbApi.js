@@ -20,7 +20,7 @@ const DUMMY_GENRES = [
 function generateUrl(type, { movieId = null, actorId = null, countryCode = null, genres = null, sort, page = 1 } = {}) {
     switch (type) {
         case 'topRated':
-            return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
+            return `${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=${LANGUAGE}&with_origin_country=${countryCode}&page=${page}`;
         case 'upcoming':
             return `${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=${LANGUAGE}&page=${page}`;
         case 'genres':
@@ -73,7 +73,6 @@ async function fetchAllMoviesData(searchKey, callback) {
 
     }catch(e){
         console.log("전체 국가 api 에러");
-        debugger;
     }
     
 }
@@ -97,7 +96,6 @@ async function fetchMoviesByCountry(countryConfig, callback) {
         callback([...data.results]);
     }catch(e){
         console.log("나라별 api 에러")
-        debugger;
     }
 };
 
@@ -144,7 +142,6 @@ async function fetchTVData(searchCriteria, callback) {
         
     }catch(e){
         console.log("TV api 에러")
-        debugger;
     }
 
     callback(data);
@@ -155,7 +152,6 @@ function setTitleOfTvData(data){
     data.forEach(item => {
         item.title = item.name;
     })
-
     return data;
 }
 
@@ -167,7 +163,7 @@ async function fetchTypeMoviesData(searchCriteria, callback) {
     let url;
     switch (name) {
         case 'topRated':
-            url = generateUrl('topRated', { page });
+            url = generateUrl('topRated', { countryCode, page });
             break;
         case 'genres':
             url = generateUrl('genres', { countryCode, genres, page });
@@ -175,8 +171,6 @@ async function fetchTypeMoviesData(searchCriteria, callback) {
         case 'upcoming':
             url = generateUrl('upcoming', { page });
             break;
-        default:
-            debugger;
     }
 
     try {
@@ -185,7 +179,7 @@ async function fetchTypeMoviesData(searchCriteria, callback) {
         
         callback([...data.results]);
     } catch (error) {
-        debugger;
+        console.log("유형별 데이터 에러");
     }
 }
 

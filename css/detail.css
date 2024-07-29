@@ -14,12 +14,13 @@
     font-weight: 400;
     font-style: normal;
 }
+
 body {
     background-color: #141414;
     margin: 0;
     padding: 0;
 
-    box-sizing:border-box;
+    box-sizing: border-box;
 }
 
 .header {
@@ -33,37 +34,41 @@ body {
     /* z-index: 1; */
     /* opacity : 0.5; */
 }
-*{
+
+* {
     letter-spacing: -1px;
 }
 
-h1{
+h1 {
     font-family: 'SBAggroB', cursive;
     font-size: 2.4rem;
-    color:#efb33b;
+    color: #efb33b;
     height: 18px;
 }
-h3{
+
+h3 {
     font-family: 'SBAggroB', cursive;
     font-size: 1.2em;
 }
 
-p{
+p {
     font-family: 'Pretendard-Regular';
     color: white;
 }
 
-.title-container{
+.title-container {
     margin-bottom: 50px;
 }
 
-.info-box{
+.info-box {
     margin-bottom: 60px;
 }
-.info-title{
+
+.info-title {
     height: 10px;
 }
-.title-container{
+
+.title-container {
     margin-bottom: 70px;
 }
 
@@ -91,22 +96,26 @@ p{
     text-shadow: 3px 3px #2D63A7;
 }
 
-.back{
+.back {
     position: fixed;
-    width: 2500px;
-    height: 3750px;
+    background-position: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100vw;
+    height: 100vh;
     z-index: -1;
 }
 
-.back-img{
-    position: fixed;
-    width: 3000px;
-    height: 4500px;
-    object-fit: fill;
-
-    opacity: 0.1;
-
+.back:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .75);
 }
+
 
 /* * * * * * * * * * * * * * * * * * * * 메인 컨테이너 * * * * * * * * * * * * * * * * * * *  */
 .main-container {
@@ -229,17 +238,19 @@ p{
 .section-body {
     margin: 0px auto;
     width: 100%;
-    overflow: hidden; /* 넘치는 부분 숨김 처리 */
+    overflow: hidden;
+    /* 넘치는 부분 숨김 처리 */
 }
 
 .poster-container {
     display: flex;
 
     overflow: hidden;
-    white-space: nowrap; /* 내부 요소를 한 줄에 나타내기 */
+    white-space: nowrap;
+    /* 내부 요소를 한 줄에 나타내기 */
 }
 
-.sub-poster{
+.sub-poster {
     width: 100%;
     object-fit: cover;
 
@@ -247,10 +258,12 @@ p{
 
 /* 각 슬라이드 요소 */
 .img-container {
-    flex: 0 0 24%; /* 한 줄에 4개의 슬라이드가 보이도록 설정 */
+    flex: 0 0 24%;
+    /* 한 줄에 4개의 슬라이드가 보이도록 설정 */
     /* width: 24%; */
     box-sizing: border-box;
-    padding: 10px; /* 슬라이드 사이 간격 설정 */
+    padding: 10px;
+    /* 슬라이드 사이 간격 설정 */
 
     display: flex;
     flex-direction: column;
@@ -268,21 +281,23 @@ p{
     display: flex;
 
     overflow: hidden;
-    white-space: nowrap; /* 내부 요소를 한 줄에 나타내기 */
+    white-space: nowrap;
+    /* 내부 요소를 한 줄에 나타내기 */
 }
 
-.actor-container{
+.actor-container {
     flex: 0 0 10%;
     /* width: 100%; */
     box-sizing: border-box;
-    padding: 10px; /* 슬라이드 사이 간격 설정 */
+    padding: 10px;
+    /* 슬라이드 사이 간격 설정 */
 
     display: flex;
     flex-direction: column;
-    
+
 }
 
-.actor-poster{
+.actor-poster {
     /* 2:3 */
     width: 180;
     height: 270px;
@@ -351,7 +366,7 @@ p{
     }
 }
 
-@media (max-width: 992px){
+@media (max-width: 992px) {
     /* .movie-info-container{
         width: 1200px;
     }    */
