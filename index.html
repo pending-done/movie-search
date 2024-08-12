@@ -1,57 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="./Web/Iconarchive-Fat-Sugar-Food-Popcorn.512.ico" />
-    <link rel="stylesheet" href="./css/header.css" />
-    <link rel="stylesheet" href="./css/menu.css" />
-    <link rel="stylesheet" href="./css/footer.css" />
-    <link rel="stylesheet" href="./css/movie.css" />
-    <link rel="stylesheet" href="./css/scrollbar.css" />
 
-    <title>FlixCatcher</title>
-  </head>
-  <!--  -->
-  <body>
-    <!-- body 영역 전체? 에 img 크게 넣기 1등 영화 (불투명도, contain?) -->
-    <div class="header">
-      <div class="logo-box">
-        <div class="logo">Flix Catcher</div>
-      </div>
-      <div class="search-box">
-        <input type="text" class="input-search" id="inputSearch" />
-      </div>
-    </div>
-    <div class="movie-container">
-      <div class="movie-list" id="movieList">
-        <!-- movie-data list -->
-      </div>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="./Web/Iconarchive-Fat-Sugar-Food-Popcorn.512.ico" />
+  <link rel="stylesheet" href="./css/header.css" />
+  <link rel="stylesheet" href="./css/menu.css" />
+  <link rel="stylesheet" href="./css/footer.css" />
+  <link rel="stylesheet" href="./css/movie.css" />
+  <link rel="stylesheet" href="./css/scrollbar.css" />
 
-    <div class="menu-box">
-      <span class="menu-text selected" id="ALL"><a href="#">전체</a></span>
-      <span class="menu-text" id="KR"><a href="#">한국</a></span>
-      <span class="menu-text" id="US"><a href="#">미국</a></span>
-      <span class="menu-text" id="JP"><a href="#">일본</a></span>
-    </div>
+  <title>FlixCatcher</title>
+</head>
+<!--  -->
 
-    <!-- <div class="category-box">
+<body>
+  <!-- body 영역 전체? 에 img 크게 넣기 1등 영화 (불투명도, contain?) -->
+  <div class="header">
+    <div class="logo-box">
+      <div class="logo">Flix Catcher</div>
+    </div>
+    <div class="search-box">
+      <input type="text" class="input-search" id="inputSearch" />
+    </div>
+  </div>
+  <div class="movie-container">
+    <div class="movie-list" id="movieList">
+      <!-- movie-data list -->
+    </div>
+  </div>
+
+  <div class="menu-box">
+    <span class="menu-text selected" id="ALL"><a href="#">전체</a></span>
+    <span class="menu-text" id="KR"><a href="#">한국</a></span>
+    <span class="menu-text" id="US"><a href="#">미국</a></span>
+    <span class="menu-text" id="JP"><a href="#">일본</a></span>
+  </div>
+
+  <!-- <div class="category-box">
         <span class="menu-text selected" id="MOVIE"><a href="#">영화</a></span>
         <span class="menu-text" id="DRAMA"><a href="#">드라마</a></span>
         <span class="menu-text" id="ANIME"><a href="#">애니</a></span>
     </div> -->
 
-    <div class="scrollbar">
-      <div class="thumb"></div>
-    </div>
-    <footer class="footer">
-      <p>2024. 이준열 A vaguely impressive phrase</p>
-    </footer>
+  <div class="scrollbar">
+    <div class="thumb"></div>
+  </div>
+  <footer class="footer">
+    <p>2024. 이준열 A vaguely impressive phrase</p>
+  </footer>
 
-    <script src="https://unpkg.com/hangul-util/dist/bundle.js"></script>
-    <script type="text/javascript" src="./js/scrollbar.js"></script>
-    <script type="text/javascript" src="./js/tmdbApi.js"></script>
-    <script type="text/javascript" src="./js/movieList.js"></script>
-  </body>
+  <script src="https://unpkg.com/hangul-util/dist/bundle.js"></script>
+  <script type="text/javascript" src="./js/scrollbar.js"></script>
+  <script type="module" src="./js/movieList.js"></script>
+</body>
+
 </html>

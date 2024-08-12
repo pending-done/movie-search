@@ -1,22 +1,5 @@
-// API 선언
-const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1Y2JjYzE5MGRmZGRmZjc0N2YxYTM4ZWVhMmY3YjA1MyIsIm5iZiI6MTcyMTYzNDM2MC43OTA1ODUsInN1YiI6IjY2OWUwYzQ1MjJiNmYzMmEwMGE2ZTkyMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.BvuzMJA_8kMTzwVp93l82e12hn6a8eO2QZospBgZtCk'
-    }
-};
-
-// 상수값들 module로 빼라
-const API_KEY = '5cbcc190dfddff747f1a38eea2f7b053';
-const BASE_URL = 'https://api.themoviedb.org/3';
-const LANGUAGE = 'ko-KR';
-const WITHOUT_GENRES = '10749';
-const COUNTRY_CODES = ['KR', 'US', 'JP']
-const DUMMY_GENRES = [
-    { id: '' },
-    { id: '' },
-]
+import constants from './constants.js';
+const { OPTIONS, API_KEY, BASE_URL, LANGUAGE, WITHOUT_GENRES, COUNTRY_CODES, DUMMY_GENRES } = constants;
 
 // tmdbapi.js 함수 모듈로 뺴라
 // 그리고 movieList, detail.js에서 갖다 써라
@@ -58,7 +41,6 @@ function generateUrl(type, { movieId = null, actorId = null, countryCode = null,
 
 
 /********************************* 메인 페이지 **********************************/
-// 전체 국가
 async function fetchAllMoviesData(searchKey, callback) {
     const urlArr = generateUrl("ALL", { countryCode: "ALL", genres: DUMMY_GENRES });
 
@@ -76,11 +58,8 @@ async function fetchAllMoviesData(searchKey, callback) {
     } catch (e) {
         console.log("전체 국가 api 에러");
     }
-
 }
 
-
-// 나라별
 async function fetchMoviesByCountry(countryConfig, callback) {
     let url;
     const { countryCode, page } = countryConfig;
@@ -101,7 +80,13 @@ async function fetchMoviesByCountry(countryConfig, callback) {
     }
 };
 
-// 전체 데이터 인기순 정렬
+function searchAllData(data, searchKey) {
+    return data.filter((value) => {
+        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
+        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
+    })
+}
+
 function sortByPopularityDesc(data, searchKey, callback) {
     data.sort((a, b) => b.popularity - a.popularity);
 
@@ -111,22 +96,11 @@ function sortByPopularityDesc(data, searchKey, callback) {
     callback(data);
 }
 
-// 데이터 검색  (공백제거, 특문제거, 대문자 치환 => 초성검색)
-function searchAllData(data, searchKey) {
-
-    // 타이틀의 공백, 특수문자를 제거하고, 검색을합니다.
-    return data.filter((value) => {
-        const title = value.title.replace(/ /g, '').replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/ ]/g, '');
-        return H.includesByCho(searchKey.toUpperCase(), title.toUpperCase())
-    })
-}
-
-
 
 /********************************** 상세페이지 **********************************/
-// TV 프로그램
 async function fetchTVData(searchCriteria, callback) {
     let data;
+    let url = '';
     const { countryCode, genres, page } = searchCriteria;
     let sort = "popularity";
 
@@ -149,7 +123,6 @@ async function fetchTVData(searchCriteria, callback) {
     callback(data);
 }
 
-// TV 데이터는 title이 아닌 name으로 되어있는데 title속성 따로 추가
 function setTitleOfTvData(data) {
     data.forEach(item => {
         item.title = item.name;
@@ -157,9 +130,6 @@ function setTitleOfTvData(data) {
     return data;
 }
 
-
-
-// 유형별 (인기, 장르, 곧 개봉 등)
 async function fetchTypeMoviesData(searchCriteria, callback) {
     const { name, countryCode, genres, page } = searchCriteria;
     let url;
@@ -185,8 +155,6 @@ async function fetchTypeMoviesData(searchCriteria, callback) {
     }
 }
 
-
-// 영화 상세정보(단일데이터)
 async function fetchDetailMovieData(movieId, processMovieData) {
     //  const url = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=ko-KR`;
     const url = generateUrl("detail", { movieId });
@@ -195,8 +163,6 @@ async function fetchDetailMovieData(movieId, processMovieData) {
     processMovieData(data);
 }
 
-
-// 출연진, 배우사진
 async function fetchActorsData(movieId, callback) {
     const url = generateUrl("credit", { movieId });
     const credits = await fetch(url).then(data => data.json());
@@ -220,3 +186,13 @@ async function fetchActorImg(actor) {
     return actor;
 }
 
+
+export {
+    fetchAllMoviesData,
+    fetchMoviesByCountry,
+    searchAllData,
+    fetchTVData,
+    fetchTypeMoviesData,
+    fetchDetailMovieData,
+    fetchActorsData,
+}

@@ -1,3 +1,5 @@
+import { fetchAllMoviesData, fetchMoviesByCountry, searchAllData } from './tmdbApi.js';
+
 const KR = { countryCode: "KR", page: 1 };
 const JP = { countryCode: "JP", genres: 16, page: 1 };
 const US = { countryCode: "US", page: 1 };
@@ -5,10 +7,6 @@ const countryConfig = { KR, JP, US };
 let selectedCountry = "";
 
 
-
-
-
-// 데이터 처리
 const processData = (data) => {
     clearHTML();
     data = filterMovieData(data);
@@ -22,7 +20,6 @@ function filterMovieData(data) {
     return data.filter(data => data.vote_count >= 15);
 }
 
-// HTML Clear
 function clearHTML() {
     let movieCard = document.getElementsByClassName('movie-card');
     while (movieCard.length > 0) {
@@ -30,7 +27,6 @@ function clearHTML() {
     }
 }
 
-// HTML Create
 
 function createHTML(data) {
     // imgSize : [w92, w154, w185, w342, w500, w780, original]
@@ -45,23 +41,18 @@ function createHTML(data) {
 
     const movieList = document.getElementById('movieList');
 
-    // div.movie-card 
     let movieCard = document.createElement("div");
     movieCard.classList.add("movie-card");
     movieCard.id = "movieCard";
 
-    /* * * * * * * * * * * 사진 영역 * * * * * * * * * * * * */
-    // div.movie-card > div.image
     let imageDiv = document.createElement("div");
     imageDiv.classList.add("image");
 
-    // div.movie-card > div.image > a.image
     let imageLink = document.createElement("a");
     imageLink.classList.add("image");
     imageLink.href = imgLink;
     imageLink.title = title;
 
-    // div.movie-card > div.image > a.image > img.card-img
     let image = document.createElement("img");
     image.classList.add("card-img");
     image.src = imgPath;
@@ -69,15 +60,13 @@ function createHTML(data) {
     imageLink.appendChild(image);
     imageDiv.appendChild(imageLink);
     movieCard.appendChild(imageDiv);
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-    /* * * * * * * * * * * 정보 영역 * * * * * * * * * * * * */
     let contentDiv = document.createElement("div");
     contentDiv.classList.add("content");
 
     let h2 = document.createElement("h2");
-    h2.textContent = title; // title 변수에 설정된 값을 사용
+    h2.textContent = title;
     contentDiv.appendChild(h2);
 
     let contentBoxDiv = document.createElement("div");
@@ -93,9 +82,7 @@ function createHTML(data) {
 
     contentDiv.appendChild(contentBoxDiv);
     movieCard.appendChild(contentDiv);
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-    // 최종 추가 (movie-card 생성)    
     movieList.appendChild(movieCard);
 }
 
@@ -121,23 +108,16 @@ menuText.forEach((target) => target.addEventListener('click', () => {
         fetchMoviesByCountry(countryConfig[selectedCountry], processData);
     }
 
-    // 메뉴클릭시 css 변경
     document.querySelector('.menu-text.selected')?.classList.remove('selected');
     target.classList.add('selected');
 }))
 
-
-// 페이지 로드 (전체데이터)
 fetchAllMoviesData("", processData);
 
-
 window.addEventListener('scroll', () => {
-    // 문서 전체의 높이
     const documentHeight = document.documentElement.scrollHeight;
-    // 현재 스크롤 위치 + 브라우저 뷰포트의 높이
     const scrollPosition = window.innerHeight + window.scrollY;
 
-    // 현재 스크롤 위치가 문서의 끝에 도달했는지 확인
     if (scrollPosition >= documentHeight) {
         countryConfig[selectedCountry].page++;
         fetchMoviesByCountry(countryConfig[selectedCountry], (data) => {
