@@ -12,10 +12,10 @@ const ORIGIN_COUNTRY_CODE = {
 }
 
 // 유형별 데이터 검색키 (장르, 곧 개봉, 명작 ...)
-const genres = {name: "genres", countryCode: null, genres: null, page: 1 };
-const upcoming = {name: "upcoming", countryCode: null, page:1};
-const topRated = {name:"topRated", countryCode: null, page:1};
-const type = {topRated, genres, upcoming};
+const genres = { name: "genres", countryCode: null, genres: null, page: 1 };
+const upcoming = { name: "upcoming", countryCode: null, page: 1 };
+const topRated = { name: "topRated", countryCode: null, page: 1 };
+const type = { topRated, genres, upcoming };
 
 
 // TV 프로그램
@@ -44,12 +44,12 @@ function processDetailMovieData(data) {
 
     let headerTitle;
 
-    if(detailCountry == "JP"){
+    if (detailCountry == "JP") {
         headerTitle = "일본의 인기 애니메이션"
-    }else if(detailCountry == "KR"){
+    } else if (detailCountry == "KR") {
         headerTitle = "한국의 인기 드라마"
-    }else{
-        headerTitle = "명작 미드" 
+    } else {
+        headerTitle = "명작 미드"
     }
 
     // 상세데이터 생성
@@ -69,7 +69,7 @@ function processDetailMovieData(data) {
         processMovieData(data, "비슷한 장르의 작품들", "genres");
     });
     // TV 데이터
-    fetchTVData(tvConfig[detailCountry], (data) =>{
+    fetchTVData(tvConfig[detailCountry], (data) => {
         processMovieData(data, headerTitle, "tv-show");
     });
 }
@@ -87,20 +87,10 @@ const processMovieData = (data, text, type) => {
     baseContainer.insertAdjacentElement('afterend', subContainer);
 }
 
-
-
 // 배우 데이터 처리 함수
 const processActorsData = (data) => {
     data.forEach(data => createActorContainer(data));
 }
-
-
-
-/**************************************************************************************************/
-/*********************************                               **********************************/
-/*********************************       HTML 생성 코드뭉치       **********************************/
-/*********************************                               **********************************/
-/**************************************************************************************************/
 
 // 영화 상세정보
 function createDetailElement(data) {
@@ -196,47 +186,32 @@ function createImgContainer(data) {
     return imgContainer;
 }
 
-
-
 // 배우 목록 
 const baseContainer = document.querySelector('.actor');
 function createActorContainer(data) {
-    // actor-main-container div
     const parent = document.querySelector('.actor-main-container');
 
-    // actor-container div 
     const actorContainer = document.createElement('div');
     actorContainer.className = 'actor-container';
 
-    // a 
     const link = document.createElement('a');
-    // link.href = `/detail/actor.html?id=${data.actorId}`;
-
-    // img
     const imgSize = "w300";
     const img = document.createElement('img');
     img.className = 'actor-poster';
     img.id = data.id;
     img.src = IMG_URL + imgSize + data.file_path;
-
-    // <a> ----> img 
     link.appendChild(img);
 
-    // p 
     const p = document.createElement('p');
     p.className = 'actor-name';
     p.id = 'actorName';
     p.textContent = data.name;
 
-    // actor-container ---->  <a>, <p> 
     actorContainer.appendChild(link);
     actorContainer.appendChild(p);
 
-    // actor-main-container ---> actor-contaienr
     parent.appendChild(actorContainer);
-
 }
-
 
 
 /**************************************************************************************************/
@@ -252,31 +227,29 @@ function processNextpage(targetElement) {
     targetElement.closest('.poster-container');
     const posterContainer = targetElement.closest('.poster-container');
 
-    if(typeName == "tv-show"){
+    if (typeName == "tv-show") {
         tvConfig[detailCountry]['page']++;
 
-        fetchTVData(tvConfig[detailCountry], (data) =>{
+        fetchTVData(tvConfig[detailCountry], (data) => {
             createNextPageData(data, posterContainer);
         })
 
-    }else{
+    } else {
         type[typeName]['page']++;
 
-    
+
         fetchTypeMoviesData(type[typeName], (data) => {
             createNextPageData(data, posterContainer);
         })
     }
 }
 
-
-function createNextPageData(data, posterContainer){
+function createNextPageData(data, posterContainer) {
     data.forEach(data => {
         const imgContainer = createImgContainer(data);
         posterContainer.appendChild(imgContainer);
     });
 }
-
 
 // 배경이미지, 포스터이미지 랜덤
 function getRandomImg(data) {
@@ -300,7 +273,6 @@ function getRandomImg(data) {
     return img;
 }
 
-// 줄거리 길면 자르고 뒤에 . . . 붙임
 function getOverview(overview, maxLength) {
     if (overview.length > maxLength) {
         return overview.substring(0, maxLength) + ". . .";
@@ -310,16 +282,11 @@ function getOverview(overview, maxLength) {
 }
 
 
-/**************************************************************************************************/
-/*********************************                               **********************************/
-/*********************************      그 외외 이벤트처리        **********************************/
-/*********************************                               **********************************/
-/**************************************************************************************************/
 
 // (1) 마우스올리면 프로그레스바 색상 변경 이벤트 
 
 // 동적으로 생성된 이벤트(이벤트 위임)
-// closet()에 매개변수로 선택자를 넣어주면
+// closest()에 매개변수로 선택자를 넣어주면
 // 호출한 요소 자신을 포함하여, 해당 요소의 조상 요소들 중에서 가장 가까운 요소(선택자)를 찾음
 // 없으면 null, 본인이 해당하면 본인 반환
 // 결론: .bar의 형제 요소를 closet()으로 찾고 nextElementSibling로 형제요소(.bar)에 대한 DOM을 가져오는 것
@@ -381,15 +348,15 @@ document.addEventListener('wheel', function (event) {
 
 function handleScroll(event, containerSelector) {
     const targetElement = event.target;
-    
+
     const container = targetElement.closest(containerSelector);
     let parent;
     let progressBar;
 
-    if(containerSelector === '.actor-main-container'){
+    if (containerSelector === '.actor-main-container') {
         parent = container.closest('.section-body');
         progressBar = parent.nextElementSibling.querySelector('.bar');
-    }else{
+    } else {
         progressBar = container.nextElementSibling.querySelector('.bar');
     }
 
@@ -406,11 +373,9 @@ function handleScroll(event, containerSelector) {
 }
 
 
-
-
 // 이미지들이 전부 로드 되었는지 확인
 function onImagesLoaded(callback) {
-    const images = document.querySelectorAll('img'); 
+    const images = document.querySelectorAll('img');
 
     if (images.length === 0) {
         callback();

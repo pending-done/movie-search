@@ -109,15 +109,15 @@ document.getElementById('inputSearch').addEventListener('input', function (e) {
 // 메뉴 클릭 이벤트
 const menuText = document.querySelectorAll('.menu-text');
 menuText.forEach((target) => target.addEventListener('click', () => {
-    selectedCountry = target.id;
+    selectedCountry = target.id; // KR
 
-    if(countryConfig[selectedCountry]){
+    if (countryConfig[selectedCountry]) {
         countryConfig[selectedCountry].page = 1;
     }
 
     if (selectedCountry === "ALL") {
         fetchAllMoviesData("", processData);
-    } else {
+    } else { //countryConfig['KR']
         fetchMoviesByCountry(countryConfig[selectedCountry], processData);
     }
 
