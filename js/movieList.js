@@ -1,4 +1,5 @@
-import { fetchAllMoviesData, fetchMoviesByCountry, searchAllData } from './tmdbApi.js';
+import { fetchAllMoviesData, fetchMoviesByCountry } from './tmdbApi.js';
+import render from './render.js'
 
 const KR = { countryCode: "KR", page: 1 };
 const JP = { countryCode: "JP", genres: 16, page: 1 };
@@ -12,7 +13,7 @@ const processData = (data) => {
     data = filterMovieData(data);
 
     data.forEach(data => {
-        createHTML(data);
+        render.createHTML(data);
     });
 }
 
@@ -25,65 +26,6 @@ function clearHTML() {
     while (movieCard.length > 0) {
         movieCard[0].parentNode.removeChild(movieCard[0]);
     }
-}
-
-
-function createHTML(data) {
-    // imgSize : [w92, w154, w185, w342, w500, w780, original]
-    const imgPath = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
-    const imgLink = `./detail/detail.html?id=${data.id}`;
-    const title = data.title;
-    const release_date = data.release_date || '2024-01-01'; // 날짜 없는 애들 더미용
-    const overview = data.overview;
-    const popularity = data.popularity;
-    const vote_average = Math.round(data.vote_average * 10) / 10;;
-    const vote_count = data.vote_count;
-
-    const movieList = document.getElementById('movieList');
-
-    let movieCard = document.createElement("div");
-    movieCard.classList.add("movie-card");
-    movieCard.id = "movieCard";
-
-    let imageDiv = document.createElement("div");
-    imageDiv.classList.add("image");
-
-    let imageLink = document.createElement("a");
-    imageLink.classList.add("image");
-    imageLink.href = imgLink;
-    imageLink.title = title;
-
-    let image = document.createElement("img");
-    image.classList.add("card-img");
-    image.src = imgPath;
-
-    imageLink.appendChild(image);
-    imageDiv.appendChild(imageLink);
-    movieCard.appendChild(imageDiv);
-
-
-    let contentDiv = document.createElement("div");
-    contentDiv.classList.add("content");
-
-    let h2 = document.createElement("h2");
-    h2.textContent = title;
-    contentDiv.appendChild(h2);
-
-    let contentBoxDiv = document.createElement("div");
-    contentBoxDiv.classList.add("content-box");
-
-    let p1 = document.createElement("p");
-    p1.textContent = "24.04.04"; // 날짜 텍스트
-    contentBoxDiv.appendChild(p1);
-
-    let p2 = document.createElement("p");
-    p2.textContent = vote_average;
-    contentBoxDiv.appendChild(p2);
-
-    contentDiv.appendChild(contentBoxDiv);
-    movieCard.appendChild(contentDiv);
-
-    movieList.appendChild(movieCard);
 }
 
 
