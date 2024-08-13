@@ -28,7 +28,6 @@ function clearHTML() {
     }
 }
 
-
 // 검색 입력 이벤트
 document.getElementById('inputSearch').addEventListener('input', function (e) {
     fetchAllMoviesData(this.value, processData);
@@ -46,7 +45,7 @@ menuText.forEach((target) => target.addEventListener('click', () => {
 
     if (selectedCountry === "ALL") {
         fetchAllMoviesData("", processData);
-    } else { //countryConfig['KR']
+    } else {
         fetchMoviesByCountry(countryConfig[selectedCountry], processData);
     }
 
