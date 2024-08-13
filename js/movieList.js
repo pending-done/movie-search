@@ -59,7 +59,7 @@ window.addEventListener('scroll', () => {
     const documentHeight = document.documentElement.scrollHeight;
     const scrollPosition = window.innerHeight + window.scrollY;
 
-    if (scrollPosition >= documentHeight) {
+    if (scrollPosition >= documentHeight * 0.9) {
         countryConfig[selectedCountry].page++;
         fetchMoviesByCountry(countryConfig[selectedCountry], (data) => {
             processNextpage(data);
@@ -74,6 +74,6 @@ function processNextpage(data) {
     data = filterMovieData(data);
 
     data.forEach(data => {
-        createHTML(data);
+        render.createHTML(data);
     });
 }

@@ -56,20 +56,12 @@ p {
     color: white;
 }
 
-.title-container {
-    margin-bottom: 50px;
-}
-
 .info-box {
-    margin-bottom: 60px;
+    /* margin-bottom: 60px; */
 }
 
 .info-title {
     height: 10px;
-}
-
-.title-container {
-    margin-bottom: 70px;
 }
 
 
@@ -122,6 +114,7 @@ p {
     letter-spacing: -1px;
     width: 100vw;
     /* max-width: 1200px; */
+    min-width: 1000px;
 
     position: relative;
     /* absolute의 기준점  : (하위 요소의 앱솔루트의 기준점)*/
@@ -164,49 +157,55 @@ p {
 
 .inner {
     width: 100%;
-    max-width: 1600px;
-    /* padding: 0px 30px; */
+    max-width: 1260px;
+    height: 100%;
+    padding: 0px 30px;
+    margin: 0 auto;
 
-    /* display: flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center; */
+    align-items: center;
 }
 
 .info-container {
     width: 100%;
 
     display: flex;
-    justify-content: start;
+    justify-content: center;
+    gap: 40px;
 }
 
 .movie-poster-container {
-    width: 50%;
+    width: 22%;
+    max-width: 600px;
+    /* min-width: 400px; */
+    display: flex;
+    justify-content: start;
+    align-items: center;
 
 }
 
 .movie-poster-img {
     object-fit: cover;
-    width: 40%;
-
-    margin-left: 40%;
+    height: 400px;
+    width: 100%;
 }
 
 .movie-info {
-    width: 50%;
+    width: 78%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: center; */
 }
 
 .movie-summary {
-    width: 80%;
+    width: 100%;
 
     display: flex;
     flex-direction: column;
-    justify-content: start;
-}
-
-.movie-summary>div {
-    width: 80%;
-    margin-left: 25%;
+    justify-content: center;
 }
 
 /* 하단 영역 (추천, 출연진 등) */

@@ -1,4 +1,3 @@
-// API 선언
 const OPTIONS = {
     method: 'GET',
     headers: {
@@ -7,7 +6,8 @@ const OPTIONS = {
     }
 };
 
-// 상수값들 module로 빼라
+// .env : 규모가 크면 로컬, 프로덕션 환경 나누기 위함 
+
 const API_KEY = '5cbcc190dfddff747f1a38eea2f7b053';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const LANGUAGE = 'ko-KR';
@@ -26,5 +26,5 @@ const ORIGIN_COUNTRY_CODE = {
 }
 const IMG_URL = "https://image.tmdb.org/t/p/";
 
-
+// default랑 아닌거 그냥 편한거 쓰면 됨
 export default { OPTIONS, API_KEY, BASE_URL, LANGUAGE, WITHOUT_GENRES, COUNTRY_CODES, DUMMY_GENRES, ORIGIN_COUNTRY_CODE, IMG_URL }
