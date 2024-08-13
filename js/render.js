@@ -3,7 +3,7 @@ import constants from "./constants.js";
 function createHTML(data) {
     // imgSize : [w92, w154, w185, w342, w500, w780, original]
     const imgPath = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
-    const imgLink = `./detail/detail.html?id=${data.id}`;
+    const imgLink = `./pages/detail.html?id=${data.id}`;
     const title = data.title;
     const release_date = data.release_date || '2024-01-01'; // 날짜 없는 애들 더미용
     const overview = data.overview;
@@ -161,7 +161,7 @@ function createImgContainer(data) {
     imgContainer.className = 'img-container';
 
     const link = document.createElement('a');
-    link.href = `../detail/detail.html?id=${data.id}`;
+    link.href = `../pages/detail.html?id=${data.id}`;
 
     const imgSize = "w780"
     const img = document.createElement('img');
